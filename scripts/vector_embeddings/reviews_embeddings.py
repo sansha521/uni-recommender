@@ -28,14 +28,12 @@ def main():
         done = min(i + BATCH_SIZE, len(names))
         print(f"  {done}/{len(names)}", end="\r")
 
-    print()
     print("Storing in output folder...")
     OUT_PATH.mkdir(parents=True, exist_ok=True)
-    np.save(OUT_PATH / "embeddings.npy", all_embeddings)
+    np.save(OUT_PATH / "embeddings", all_embeddings)
     print(f"Saved {len(all_embeddings)} embeddings to {OUT_PATH}")
 
     print(f"Done. {len(names)} universities stored.")
-
 
 
 if __name__ == "__main__":
