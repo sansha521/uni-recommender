@@ -13,6 +13,7 @@ TOP_K = 8
 MODEL = "claude-sonnet-4-6"
 
 
+# Test
 def generate_hypothetical_document(user_query: str, client: anthropic.Anthropic) -> str:
     """HyDE: generate a fake Wikipedia excerpt describing the ideal university,
     then embed that instead of the raw user query for better semantic match."""
@@ -35,7 +36,9 @@ def generate_hypothetical_document(user_query: str, client: anthropic.Anthropic)
     return response.content[0].text
 
 
-def retrieve(query: str, model: SentenceTransformer, collection, client: anthropic.Anthropic) -> list[dict]:
+def retrieve(
+    query: str, model: SentenceTransformer, collection, client: anthropic.Anthropic
+) -> list[dict]:
     print("Generating hypothetical document (HyDE)...")
     hypothetical_doc = generate_hypothetical_document(query, client)
     print(f"  → {hypothetical_doc[:120]}...\n")
@@ -52,7 +55,9 @@ def retrieve(query: str, model: SentenceTransformer, collection, client: anthrop
     return universities
 
 
-def recommend(user_query: str, universities: list[dict], client: anthropic.Anthropic) -> str:
+def recommend(
+    user_query: str, universities: list[dict], client: anthropic.Anthropic
+) -> str:
     context_parts = []
     for u in universities:
         snippet = u["text"][:1500].strip()
@@ -111,7 +116,9 @@ def main():
     print(f"Searching across {collection.count()} universities...\n")
     universities = retrieve(query, embed_model, collection, ai_client)
 
-    print(f"Top {len(universities)} matches retrieved. Asking Claude for recommendations...\n")
+    print(
+        f"Top {len(universities)} matches retrieved. Asking Claude for recommendations...\n"
+    )
     print("=" * 60)
     result = recommend(query, universities, ai_client)
     print(result)
