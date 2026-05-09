@@ -13,6 +13,7 @@ TOP_K = 8
 MODEL = "claude-sonnet-4-6"
 
 
+# Test Commit
 def generate_hypothetical_document(user_query: str, client: anthropic.Anthropic) -> str:
     """HyDE: generate a fake Wikipedia excerpt describing the ideal university,
     then embed that instead of the raw user query for better semantic match."""
