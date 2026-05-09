@@ -37,7 +37,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run script
-        run: python s3_vector_wikipedia.py
+        run: python /scripts/s3_vector_wikipedia.py
       
       - name: Run script
-        run: python s3_vector.py
+        run: python /scripts/s3_vector.py
