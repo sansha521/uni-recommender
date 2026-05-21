@@ -16,21 +16,24 @@ COLLECTION_NAME = "universities"
 EMBED_MODEL = "multi-qa-mpnet-base-dot-v1"
 TEXT_TRUNCATE = 3000
 
-
 s3vectors = boto3.client("s3vectors", region_name=REGION)
+
+model = SentenceTransformer(EMBED_MODEL)
 
 
 def main(user_prompt: str) -> None:
     # Embed the prompt
     pass
-    embeddings = EMBED_MODEL.encode(user_prompt)
+    embeddings = model.encode(user_prompt).astype("float32").tolist()
 
     # Call the Vector Bucket
     response = s3vectors.query_vectors(
         vectorBucketName=VECTOR_BUCKET,
         indexName=INDEX_NAME,
-        queryVector=embeddings,
+        queryVector={"float32": embeddings},
         topK=5,
+        returnDistance=True,
+        returnMetadata=True,
     )
 
     for match in response["Matches"]:
