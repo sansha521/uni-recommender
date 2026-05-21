@@ -1,0 +1,10 @@
+massachusetts-institute-of-technology
+stanford-university
+harvard-university
+university-of-michigan-ann-arbor
+university-of-texas-austin
+university-of-california-los-angeles
+georgia-institute-of-technology
+university-of-florida
+new-york-university
+university-of-southern-california
