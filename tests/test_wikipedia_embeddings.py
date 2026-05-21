@@ -1,15 +1,15 @@
 from pathlib import Path
 import boto3
 from dotenv import load_dotenv
+import json
 
 from sentence_transformers import SentenceTransformer
-import chromadb
 
 load_dotenv()
 
 REGION = "us-east-1"
 VECTOR_BUCKET = "uni-rec-s3-vector-bucket"
-INDEX_NAME = "uni-rec-index"
+INDEX_NAME = "uni-rec-wikipedia"
 
 DATA_PATH = Path(__file__).parent / "scraping/output/wikipedia_us_universities.jsonl"
 COLLECTION_NAME = "universities"
@@ -26,6 +26,10 @@ def main(user_prompt: str) -> None:
     pass
     embeddings = model.encode(user_prompt).astype("float32").tolist()
 
+    print(type(embeddings))
+    print(len(embeddings))
+    print(embeddings[:5])
+
     # Call the Vector Bucket
     response = s3vectors.query_vectors(
         vectorBucketName=VECTOR_BUCKET,
@@ -36,8 +40,7 @@ def main(user_prompt: str) -> None:
         returnMetadata=True,
     )
 
-    for match in response["Matches"]:
-        print(f"Key: {match['Key']}, Score: {match['Distance']}")
+    print(json.dumps(response["vectors"], indent=2))
 
 
 if __name__ == "__main__":
