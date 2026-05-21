@@ -1,5 +1,4 @@
-### Create text embeddings for university reviews
-import csv
+# Create text embeddings for university reviews
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -8,11 +7,14 @@ from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
-DATA_PATH = Path(__file__).parent.parent.parent / "datasets/university_reviews.csv"
+DATA_PATH = (
+    Path(__file__).parent.parent.parent / "datasets/university_reviews_slice_2.csv"
+)
 OUT_PATH = Path(__file__).parent.parent.parent / "rag/reviews"
 COLLECTION_NAME = "reviews"
 TEXT_TRUNCATE = 3000
 BATCH_SIZE = 32
+
 
 def main():
     df = pd.read_csv(DATA_PATH)
@@ -38,3 +40,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

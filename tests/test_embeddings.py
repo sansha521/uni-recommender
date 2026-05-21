@@ -46,7 +46,7 @@ if __name__ == "__main__":
     row_id = main(user_prompt)
 
     # Get the review data
-    df = pd.read_csv("./datasets/university_reviews.csv")
+    df = pd.read_csv("./datasets/university_reviews_slice_2.csv")
 
     row = df.iloc[row_id]
     print(row)
