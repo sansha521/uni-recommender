@@ -1,5 +1,7 @@
-import numpy as np
+import json
+
 import boto3
+import pandas as pd
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 
@@ -17,25 +19,34 @@ model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 s3vectors = boto3.client("s3vectors", region_name=REGION)
 
 
-def main(user_prompt: str) -> None:
+def main(user_prompt: str) -> int:
     # Embed the prompt
-    pass
-    embeddings = model.encode(user_prompt)
+    embeddings = model.encode(user_prompt).astype("float32").tolist()
 
     # Call the Vector Bucket
     response = s3vectors.query_vectors(
         vectorBucketName=VECTOR_BUCKET,
         indexName=INDEX_NAME,
-        queryVector=embeddings,
+        queryVector={"float32": embeddings},
         topK=5,
+        returnDistance=True,
+        returnMetadata=True,
     )
 
-    for match in response["Matches"]:
-        print(f"Key: {match['Key']}, Score: {match['Distance']}")
+    print(response)
+    print(json.dumps(response["vectors"], indent=2))
+
+    row_id = int(response["vectors"][0]["metadata"]["row_id"])
+    return row_id
 
 
 if __name__ == "__main__":
-    user_prompt = "Uni in New York City"
+    user_prompt = "Which University in New York City"
 
-    main(user_prompt)
-    pass
+    row_id = main(user_prompt)
+
+    # Get the review data
+    df = pd.read_csv("./datasets/university_reviews.csv")
+
+    row = df.iloc[row_id]
+    print(row)
