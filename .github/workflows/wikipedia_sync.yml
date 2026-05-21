@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'rag/**'
+      - 'data_processing/rag/**'
 
 jobs:
   run-script:
