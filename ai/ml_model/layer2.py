@@ -6,13 +6,13 @@ vector search function
 Output: 5 best universities
 """
 
-import json
-
 import boto3
 import pandas as pd
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 import chromadb
+
+from ..utils import load_local_data
 
 load_dotenv()
 
@@ -21,7 +21,7 @@ VECTOR_BUCKET = "uni-rec-s3-vector-bucket"
 INDEX_NAME_REVIEWS = "uni-rec-index"
 INDEX_NAME_WIKIPEDIA = "uni-rec-wikipedia"
 
-NPY_FILE = "../../data_processing/rag/reviews/embeddings.npy"
+NPY_FILE = "../data_processing/rag/reviews/embeddings.npy"
 ADD_METADATA = True
 BATCH_SIZE = 500
 
@@ -29,7 +29,7 @@ COLLECTION_NAME = "universities"
 EMBED_MODEL = "multi-qa-mpnet-base-dot-v1"
 TEXT_TRUNCATE = 3000
 
-CHROMA_PATH = "../../data_processing/rag/wikipedia"
+CHROMA_PATH = "../data_processing/rag/wikipedia"
 COLLECTION_NAME = "universities"
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
@@ -57,13 +57,10 @@ def query_s3_vector(user_prompt: str) -> list[int]:
 
     row_ids = [int(vec["metadata"]["row_id"]) for vec in response["vectors"]]
 
-    # for vec in response["vectors"]:
-    #     row_ids.append(int(vec["metadata"]["row_id"]))
-
     return row_ids
 
 
-def query_s3_wikipedia(user_prompt: str) -> list[int]:
+def query_s3_wikipedia(user_prompt: str) -> list[str]:
     # Embed the prompt
     embeddings = model_wikipedia.encode(user_prompt).astype("float32").tolist()
 
@@ -78,5 +75,37 @@ def query_s3_wikipedia(user_prompt: str) -> list[int]:
     )
 
     # print(json.dumps(response["vectors"], indent=2))
-    row_ids = [int(vec["key"]) for vec in response["vectors"]]
+    row_ids = [(vec["key"]) for vec in response["vectors"]]
     return row_ids
+
+
+def layer2(
+    layer1_data: pd.DataFrame,
+    user_prompt: str,
+    concentration: str | None = None,
+    degree: str | None = None,
+) -> pd.DataFrame:
+    reviews_row_ids = query_s3_vector(user_prompt)
+
+    wikipedia_row_ids = query_s3_wikipedia(user_prompt)
+
+    # Review DataFrame
+    df_reviews = load_local_data("../datasets/university_reviews_slice_2.csv")
+
+    df_reviews_filtered = df_reviews.iloc[reviews_row_ids]
+    df_reviews_name = set(df_reviews_filtered["name"].tolist())
+
+    wikipedia_filered = collection.get(wikipedia_row_ids)
+    wikipedia_filered_names = {
+        metadata["name"] for metadata in wikipedia_filered["metadatas"]
+    }
+
+    layer2_uni_names = list(df_reviews_name | wikipedia_filered_names)
+
+    # The Context For the LLM
+    # To Further Filter Layer 1
+    layer1_data_filtered = layer1_data[
+        layer1_data["school.name"].isin(layer2_uni_names)
+    ]
+
+    return layer1_data_filtered

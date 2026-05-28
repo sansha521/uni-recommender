@@ -3,25 +3,29 @@ filter universities based on minimum requirements.
 Args: budget (range cost of attendance, tuition), concentration, degree (undergraduate, graduate, associate), grades (ACT, SAT), region
 Output: Top 20 universities that satisfy the requirements
 """
+
 import pandas as pd
 from pathlib import Path
 
-DATA_PATH = Path(__file__).parent / "datasets/us_uni_data_filtered.csv"
+from ..utils import load_local_data
 
-def load_local_data(path):
-    return pd.read_csv(path)
+DATA_PATH = Path(__file__).parent.parent.parent / "datasets/us_uni_data_filtered.csv"
+
 
 def filter_uni(
-        budget_range: tuple[int, int],
-        score_type: str | None,
-        score: int | None,
-        region: list[str] | None,
-        data: pd.DataFrame,
+    budget_range: tuple[int, int],
+    score_type: str | None,
+    score: int | None,
+    region: list[str] | None,
+    data: pd.DataFrame,
 ) -> pd.DataFrame:
-    
+
     # filter by budget
     min_budget, max_budget = budget_range
-    df_budget = data[(data["latest.cost.attendance.academic_year"] >= min_budget) & (data["latest.cost.attendance.academic_year"] <= max_budget)]
+    df_budget = data[
+        (data["latest.cost.attendance.academic_year"] >= min_budget)
+        & (data["latest.cost.attendance.academic_year"] <= max_budget)
+    ]
 
     # filter by score
     score_col = None
@@ -34,7 +38,7 @@ def filter_uni(
 
     if score:
         df_score = df_budget[df_budget[score_col] <= score]
-    
+
     # filter by region
     # TODO: add region column in dataset
     # northeast, midatlantic, midwest, west, southeast, southwest, northwest
@@ -46,18 +50,14 @@ def filter_uni(
     final_df = df_region
     return final_df
 
+
 def layer1(
-        budget_range,
-        score_type,
-        score,
-        region,
-):
+    budget_range: tuple[int, int],
+    score_type: str | None = None,
+    score: int | None = None,
+    region: str | None = None,
+) -> pd.DataFrame:
     df = load_local_data(DATA_PATH)
-    df_filtered = filter_uni(
-        budget_range,
-        score_type,
-        score,
-        region,
-        df
-    )
+    df_filtered = filter_uni(budget_range, score_type, score, region, df)
     return df_filtered
+
