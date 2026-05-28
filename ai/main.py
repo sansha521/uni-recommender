@@ -56,5 +56,4 @@ async def query_embeddings(user_prompt: UserPromptModel):
     )
 
     response = layer2_data.to_json(orient="records")
-    print(response)
     return response
