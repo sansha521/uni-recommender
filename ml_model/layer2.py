@@ -41,7 +41,7 @@ model_wikipedia = SentenceTransformer(EMBED_MODEL)
 s3vectors = boto3.client("s3vectors", region_name=REGION)
 
 
-def query_s3_vector(user_prompt: str) -> int:
+def query_s3_vector(user_prompt: str) -> list[int]:
     # Embed the prompt
     embeddings = model_google.encode(user_prompt).astype("float32").tolist()
 
@@ -55,10 +55,15 @@ def query_s3_vector(user_prompt: str) -> int:
         returnMetadata=True,
     )
 
-    row_id = int(response["vectors"][0]["metadata"]["row_id"])
-    return row_id
+    row_ids = [int(vec["metadata"]["row_id"]) for vec in response["vectors"]]
 
-def query_s3_wikipedia(user_prompt: str) -> int:
+    # for vec in response["vectors"]:
+    #     row_ids.append(int(vec["metadata"]["row_id"]))
+
+    return row_ids
+
+
+def query_s3_wikipedia(user_prompt: str) -> list[int]:
     # Embed the prompt
     embeddings = model_wikipedia.encode(user_prompt).astype("float32").tolist()
 
@@ -73,7 +78,5 @@ def query_s3_wikipedia(user_prompt: str) -> int:
     )
 
     # print(json.dumps(response["vectors"], indent=2))
-    row_id = response["vectors"][0]["key"]
-    return row_id
-
-
+    row_ids = [int(vec["key"]) for vec in response["vectors"]]
+    return row_ids
