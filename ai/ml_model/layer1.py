@@ -8,7 +8,7 @@ import pandas as pd
 
 from ..utils import load_local_data
 
-DATA_PATH = "../data_source/us_uni_data_filtered.csv"
+DATA_PATH = "./data_source/us_uni_data_filtered.csv"
 
 
 def filter_uni(

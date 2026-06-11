@@ -5,3 +5,4 @@ transformers==5.9.0
 sentence-transformers==5.5.1
 pandas==3.0.1
 chromadb==1.5.9
+boto3==1.43.12
