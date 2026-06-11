@@ -28,6 +28,11 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+async def health_check():
+    return {"stauts": "running!"}
+
+
 @app.post("/prompt/")
 async def query_embeddings(user_prompt: UserPromptModel):
 
