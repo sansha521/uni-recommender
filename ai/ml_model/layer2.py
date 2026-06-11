@@ -90,7 +90,7 @@ def layer2(
     wikipedia_row_ids = query_s3_wikipedia(user_prompt)
 
     # Review DataFrame
-    df_reviews = load_local_data("../datasets/university_reviews_slice_2.csv")
+    df_reviews = load_local_data("./data_source/university_reviews_slice_2.csv")
 
     df_reviews_filtered = df_reviews.iloc[reviews_row_ids]
     df_reviews_name = set(df_reviews_filtered["name"].tolist())
