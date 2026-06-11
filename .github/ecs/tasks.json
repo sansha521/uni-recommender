@@ -6,12 +6,6 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-    "environmentFiles": [
-        {
-            "value": "arn:aws:s3:::unirec-s3-bucket/uni-rec-ai.env",
-            "type": "s3"
-        }
-    ],
   "executionRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-role",
   "taskRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-app-role",
   "containerDefinitions": [
@@ -22,6 +16,12 @@
       "memory": 4096,
       "memoryReservation": 2048,
       "essential": true,
+    "environmentFiles": [
+        {
+            "value": "arn:aws:s3:::unirec-s3-bucket/uni-rec-ai.env",
+            "type": "s3"
+        }
+    ],
       "portMappings": [
         {
           "name": "ai_service_container-tcp",
