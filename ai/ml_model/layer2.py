@@ -21,7 +21,7 @@ VECTOR_BUCKET = "uni-rec-s3-vector-bucket"
 INDEX_NAME_REVIEWS = "uni-rec-index"
 INDEX_NAME_WIKIPEDIA = "uni-rec-wikipedia"
 
-NPY_FILE = "../data_processing/rag/reviews/embeddings.npy"
+NPY_FILE = "./data_source/embeddings.npy"
 ADD_METADATA = True
 BATCH_SIZE = 500
 
@@ -29,7 +29,7 @@ COLLECTION_NAME = "universities"
 EMBED_MODEL = "multi-qa-mpnet-base-dot-v1"
 TEXT_TRUNCATE = 3000
 
-CHROMA_PATH = "../data_processing/rag/wikipedia"
+CHROMA_PATH = "./data_source/wikipedia/"
 COLLECTION_NAME = "universities"
 
 client = chromadb.PersistentClient(path=CHROMA_PATH)
@@ -90,7 +90,7 @@ def layer2(
     wikipedia_row_ids = query_s3_wikipedia(user_prompt)
 
     # Review DataFrame
-    df_reviews = load_local_data("../datasets/university_reviews_slice_2.csv")
+    df_reviews = load_local_data("./data_source/university_reviews_slice_2.csv")
 
     df_reviews_filtered = df_reviews.iloc[reviews_row_ids]
     df_reviews_name = set(df_reviews_filtered["name"].tolist())

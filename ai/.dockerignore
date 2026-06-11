@@ -1,0 +1,36 @@
+# Version control
+.git
+.gitignore
+.hg
+.svn
+
+# Dependencies (to prevent overwriting what you install inside the image)
+node_modules/
+bower_components/
+vendor/
+
+# Build outputs and IDE configurations
+dist/
+build/
+out/
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs and runtime data
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Secrets and environment variables
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+
