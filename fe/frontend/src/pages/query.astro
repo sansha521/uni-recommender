@@ -1,6 +1,8 @@
 ---
 // src/pages/user_query_form.astro
 import { Select } from 'free-astro-components'
+import Navigation from '../components/Navigation.astro';
+import Header from '../components/Header.astro';
 // const title = "About Me";
 ---
 
@@ -10,6 +12,7 @@ import { Select } from 'free-astro-components'
     <!-- <title>{title}</title> -->
   </head>
   <body>
+    <Header />
       <!-- <h1>{title}</h1> -->
       <p>Find your dream university!</p>
     <h1>Tell us a bit about what you are looking for...</h1>
@@ -91,13 +94,16 @@ import { Select } from 'free-astro-components'
 
 <script>
   import { actions } from 'astro:actions';
-  import { navigate } from 'astro:transitions/client';
 
   const form = document.querySelector('form');
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
-    let query = formData.entries()
-    const { error } = await actions.userquery(formData);
-  })
+    const { data, error } = await actions.userquery(formData);
+    if (!error && data) {
+      window.location.href = `/results?data=${encodeURIComponent(JSON.stringify(data))}`;
+    } else {
+      console.error("Error fetching recommendations:", error);
+    }
+  });
 </script>
