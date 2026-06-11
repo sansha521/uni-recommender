@@ -18,11 +18,13 @@ from ..utils import load_local_data
 load_dotenv()
 
 import numpy as np
+from pathlib import Path
 from transformers import AutoTokenizer
 import onnxruntime as ort
 
-session_google = ort.InferenceSession("ai/ml_model/models/google_embeddings.onnx")
-session_wikipedia = ort.InferenceSession("ai/ml_model/models/wikipedia_embeddings.onnx")
+_MODELS_DIR = Path(__file__).parent / "models"
+session_google = ort.InferenceSession(str(_MODELS_DIR / "google_embeddings.onnx"))
+session_wikipedia = ort.InferenceSession(str(_MODELS_DIR / "wikipedia_embeddings.onnx"))
 
 tokenizer_google = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 tokenizer_wikipedia = AutoTokenizer.from_pretrained("sentence-transformers/multi-qa-mpnet-base-dot-v1")
