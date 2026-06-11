@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .ml_model import layer1, layer2, layer3
@@ -10,16 +11,31 @@ load_dotenv()
 
 class UserPromptModel(BaseModel):
     user_prompt: str
+    budget_min: float = 0
+    budget_max: float = 100_000_000
+    score_type: str | None = None
+    score: int | None = None
+    region: str | None = None
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4321"],
+    allow_methods=["POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.post("/prompt/")
 async def query_embeddings(user_prompt: UserPromptModel):
 
     layer1_data = layer1.layer1(
-        budget_range=(0, 100_000_000),
+        budget_range=(user_prompt.budget_min, user_prompt.budget_max),
+        score_type=user_prompt.score_type,
+        score=user_prompt.score,
+        region=user_prompt.region,
     )
 
     layer2_data = layer2.layer2(

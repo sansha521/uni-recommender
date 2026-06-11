@@ -94,13 +94,16 @@ import Header from '../components/Header.astro';
 
 <script>
   import { actions } from 'astro:actions';
-  import { navigate } from 'astro:transitions/client';
 
   const form = document.querySelector('form');
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
-    let query = formData.entries()
-    const { error } = await actions.userquery(formData);
-  })
+    const { data, error } = await actions.userquery(formData);
+    if (!error && data) {
+      window.location.href = `/results?data=${encodeURIComponent(JSON.stringify(data))}`;
+    } else {
+      console.error("Error fetching recommendations:", error);
+    }
+  });
 </script>
