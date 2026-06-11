@@ -17,7 +17,7 @@
   "containerDefinitions": [
     {
       "name": "ai-service",
-      "image": "514585225124.dkr.ecr.us-east-1.amazonaws.com/backend/uni-rec:ai-service:v1.00",
+      "image": "<IMAGE>",
       "cpu": 1024,
       "memory": 4096,
       "memoryReservation": 2048,
