@@ -5,11 +5,10 @@ Output: Top 20 universities that satisfy the requirements
 """
 
 import pandas as pd
-from pathlib import Path
 
 from ..utils import load_local_data
 
-DATA_PATH = Path(__file__).parent.parent.parent / "datasets/us_uni_data_filtered.csv"
+DATA_PATH = "../data_source/us_uni_data_filtered.csv"
 
 
 def filter_uni(
@@ -60,4 +59,3 @@ def layer1(
     df = load_local_data(DATA_PATH)
     df_filtered = filter_uni(budget_range, score_type, score, region, df)
     return df_filtered
-
