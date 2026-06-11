@@ -33,4 +33,5 @@ yarn-error.log*
 *.pem
 *.key
 
-
+# Ignore the Local models folder
+./ml_model/model/*
