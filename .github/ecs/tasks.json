@@ -2,8 +2,8 @@
   "family": "uni-rec-ai-service",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": 2048,
-  "memory": 4096,
+  "cpu": "2048",
+  "memory": "4096",
   "runtimePlatform": {
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
