@@ -1,0 +1,78 @@
+---
+// src/pages/user_query_form.astro
+import { Select } from 'free-astro-components'
+// const title = "About Me";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <title>{title}</title> -->
+  </head>
+  <body>
+      <!-- <h1>{title}</h1> -->
+      <p>Find your dream university!</p>
+    <h1>Tell us a bit about what you are looking for...</h1>
+    <form>
+      <label>
+        Budget range
+        <Select
+          label="Lowest budget point"
+          options={[
+            { value: '1', label: '0' },
+            { value: '2', label: '5,000' },
+            { value: '3', label: '7,500' },
+            { value: '4', label: '10,000'},
+            { value: '5', label: '30,000'},
+            { value: '6', label: '50,000'}
+          ]}
+          placeholder="Cannot select"
+        />
+        <Select
+          label="Highest budget point"
+          options={[
+            { value: '1', label: '5,000' },
+            { value: '2', label: '75,000' },
+            { value: '3', label: '10,000' },
+            { value: '4', label: '30,000' },
+            { value: '5', label: '50,000 '},
+            { value: '6', label: '100,000'}
+          ]}
+          placeholder="Cannot select"
+        />
+      </label>
+      <label>
+        Score type
+        <Select
+          label="Highest budget point"
+          options={[
+            { value: '1', label: 'ACT' },
+            { value: '2', label: 'SAT' }
+          ]}
+          placeholder="Cannot select"
+        />
+      </label>
+      <label>
+        Score
+        <input type="number" name="score" />
+      </label>
+      <label>
+        Region
+        <Select
+          label="Choose the region that you want to study in."
+          options={[
+            { value: '1', label: 'northeast' },
+            { value: '2', label: 'midatlantic' },
+            { value: '3', label: 'midwest' },
+            { value: '4', label: 'west' },
+            { value: '5', label: 'southeast'},
+            { value: '6', label: 'southwest'},
+            { value: '7', label: 'northwest'}
+          ]}
+          placeholder="Cannot select"
+        />
+      </label>
+      <button>Submit</button>
+    </form>
+  </body>
+</html>
