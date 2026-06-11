@@ -1,0 +1,21 @@
+---
+const raw = Astro.url.searchParams.get("data") || "[]";
+const recommendations: { name: string; reasoning: string }[] = JSON.parse(raw);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Results</title>
+  </head>
+  <body>
+    <h1>Your Top University Recommendations</h1>
+
+    {recommendations.map((rec, i) => (
+      <div>
+        <h2>{i + 1}. {rec.name}</h2>
+        <p>{rec.reasoning}</p>
+      </div>
+    ))}
+  </body>
+</html>
