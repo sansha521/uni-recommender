@@ -17,6 +17,7 @@ import { Select } from 'free-astro-components'
       <label>
         Budget range
         <Select
+          name="budget_min"
           label="Lowest budget point"
           options={[
             { value: '1', label: '0' },
@@ -29,6 +30,7 @@ import { Select } from 'free-astro-components'
           placeholder="Cannot select"
         />
         <Select
+          name="budget_max"
           label="Highest budget point"
           options={[
             { value: '1', label: '5,000' },
@@ -44,7 +46,8 @@ import { Select } from 'free-astro-components'
       <label>
         Score type
         <Select
-          label="Highest budget point"
+          name="score_type"
+          label="Score type"
           options={[
             { value: '1', label: 'ACT' },
             { value: '2', label: 'SAT' }
@@ -59,6 +62,7 @@ import { Select } from 'free-astro-components'
       <label>
         Region
         <Select
+          name="region"
           label="Choose the region that you want to study in."
           options={[
             { value: '1', label: 'northeast' },
