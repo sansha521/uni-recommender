@@ -1,0 +1,30 @@
+---
+// src/components/Navigation.astro
+---
+
+
+<nav id="main-menu" class="nav-links">
+  <a href="/">Home</a>
+  <a href="/query/">User Query</a>
+  <a href="/results/">Results</a>
+</nav>
+
+<style>
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 2rem;
+    background-color: #1f2937;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .nav-links a:hover {
+    color: #60a5fa;
+  }
+</style>
