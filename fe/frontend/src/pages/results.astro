@@ -1,4 +1,6 @@
 ---
+import Header from '../components/Header.astro';
+
 const raw = Astro.url.searchParams.get("data") || "[]";
 const recommendations: { name: string; reasoning: string }[] = JSON.parse(raw);
 ---
@@ -9,6 +11,7 @@ const recommendations: { name: string; reasoning: string }[] = JSON.parse(raw);
     <title>Results</title>
   </head>
   <body>
+    <Header />
     <h1>Your Top University Recommendations</h1>
 
     {recommendations.map((rec, i) => (
