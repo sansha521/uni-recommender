@@ -28,5 +28,4 @@ COPY . .
 EXPOSE 80
 
 # Run the FastAPI application using the official CLI (FastAPI CLI)
-CMD ["fastapi", "run", "main.py", "--port", "80"]
-
+CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "80"]
