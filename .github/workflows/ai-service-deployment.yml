@@ -1,0 +1,76 @@
+# Builds the AI service image, pushes it to Amazon ECR, then deploys to Amazon ECS (Fargate).
+#
+# Prerequisites (created once on the AWS side — see the IAM/setup notes):
+#   1. An ECR repository:        backend/uni-rec
+#   2. An ECS cluster:           uni-rec-cluster
+#   3. An ECS service:           uni-rec-ai-service  (running the task defined in .github/ecs/tasks.json)
+#   4. A CloudWatch log group:   /ecs/uni-rec-ai-service
+#   5. Two IAM roles referenced in tasks.json (execution role + task role)
+#   6. GitHub Actions secrets:   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (deployer credentials)
+
+name: Deploy AI-Service to Amazon ECS
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'ai/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1                       # AWS region
+  ECR_REPOSITORY: backend/uni-rec             # Amazon ECR repository name
+  ECS_CLUSTER: uni-rec-cluster                # ECS cluster name
+  ECS_SERVICE: uni-rec-ai-service             # ECS service name
+  ECS_TASK_DEFINITION: .github/ecs/tasks.json # path to the task definition template
+  CONTAINER_NAME: ai-service                  # must match the container name in tasks.json
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}   # immutable, traceable tag per commit
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ai/Dockerfile ai/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      # - name: Render new image into the ECS task definition
+      #   id: render
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
+      #     container-name: ${{ env.CONTAINER_NAME }}
+      #     image: ${{ steps.build-image.outputs.image }}
+      #
+      # - name: Deploy to Amazon ECS
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      #   with:
+      #     task-definition: ${{ steps.render.outputs.task-definition }}
+      #     service: ${{ env.ECS_SERVICE }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
+      #     wait-for-service-stability: true
