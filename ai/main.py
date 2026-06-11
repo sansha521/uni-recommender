@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from .ml_model import layer1, layer2
+from .ml_model import layer1, layer2, layer3
 
 load_dotenv()
 
@@ -55,5 +55,9 @@ async def query_embeddings(user_prompt: UserPromptModel):
         degree=None,
     )
 
-    response = layer2_data.to_json(orient="records")
-    return response
+    recommendations = layer3.layer3(
+        layer2_data=layer2_data,
+        user_prompt=user_prompt.user_prompt,
+    )
+
+    return {"recommendations": recommendations}
