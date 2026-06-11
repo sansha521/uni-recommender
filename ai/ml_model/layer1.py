@@ -43,8 +43,8 @@ def filter_uni(
     # northeast, midatlantic, midwest, west, southeast, southwest, northwest
     df_region = df_score
 
-    if region:
-        df_region = df_region[df_region["region"].isin(region)]
+    # if region:
+    #     df_region = df_region[df_region["region"].isin(region)]
 
     final_df = df_region
     return final_df
