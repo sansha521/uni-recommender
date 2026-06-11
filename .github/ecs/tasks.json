@@ -14,6 +14,8 @@
     {
       "name": "ai-service",
       "image": "<IMAGE>",
+      "cpu": 2048,
+      "memory": 4096,
       "memoryReservation": 2048,
       "essential": true,
         "environmentFiles": [
