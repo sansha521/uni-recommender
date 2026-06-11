@@ -20,12 +20,12 @@ import { Select } from 'free-astro-components'
           name="budget_min"
           label="Lowest budget point"
           options={[
-            { value: '1', label: '0' },
-            { value: '2', label: '5,000' },
-            { value: '3', label: '7,500' },
-            { value: '4', label: '10,000'},
-            { value: '5', label: '30,000'},
-            { value: '6', label: '50,000'}
+            { value: '0', label: '0' },
+            { value: '5000', label: '5,000' },
+            { value: '7500', label: '7,500' },
+            { value: '10000', label: '10,000'},
+            { value: '30000', label: '30,000'},
+            { value: '50000', label: '50,000'}
           ]}
           placeholder="Cannot select"
         />
@@ -33,12 +33,12 @@ import { Select } from 'free-astro-components'
           name="budget_max"
           label="Highest budget point"
           options={[
-            { value: '1', label: '5,000' },
-            { value: '2', label: '75,000' },
-            { value: '3', label: '10,000' },
-            { value: '4', label: '30,000' },
-            { value: '5', label: '50,000 '},
-            { value: '6', label: '100,000'}
+            { value: '5000', label: '5,000' },
+            { value: '75000', label: '75,000' },
+            { value: '10000', label: '10,000' },
+            { value: '30000', label: '30,000' },
+            { value: '50000', label: '50,000 '},
+            { value: '100000', label: '100,000'}
           ]}
           placeholder="Cannot select"
         />
@@ -49,8 +49,8 @@ import { Select } from 'free-astro-components'
           name="score_type"
           label="Score type"
           options={[
-            { value: '1', label: 'ACT' },
-            { value: '2', label: 'SAT' }
+            { value: 'ACT', label: 'ACT' },
+            { value: 'SAT', label: 'SAT' }
           ]}
           placeholder="Cannot select"
         />
@@ -65,13 +65,13 @@ import { Select } from 'free-astro-components'
           name="region"
           label="Choose the region that you want to study in."
           options={[
-            { value: '1', label: 'northeast' },
-            { value: '2', label: 'midatlantic' },
-            { value: '3', label: 'midwest' },
-            { value: '4', label: 'west' },
-            { value: '5', label: 'southeast'},
-            { value: '6', label: 'southwest'},
-            { value: '7', label: 'northwest'}
+            { value: 'northeast', label: 'northeast' },
+            { value: 'midatlantic', label: 'midatlantic' },
+            { value: 'midwest', label: 'midwest' },
+            { value: 'west', label: 'west' },
+            { value: 'southeast', label: 'southeast'},
+            { value: 'southwest', label: 'southwest'},
+            { value: 'northwest', label: 'northwest'}
           ]}
           placeholder="Cannot select"
         />
@@ -97,8 +97,7 @@ import { Select } from 'free-astro-components'
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
-    console.log(formData);
+    let query = formData.entries()
     const { error } = await actions.userquery(formData);
-    if (!error) navigate('/confirmation');
   })
 </script>
