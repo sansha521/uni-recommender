@@ -6,12 +6,18 @@
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
+    "environmentFiles": [
+        {
+            "value": "arn:aws:s3:::unirec-s3-bucket/uni-rec-ai.env",
+            "type": "s3"
+        }
+    ],
   "executionRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-role",
   "taskRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-app-role",
   "containerDefinitions": [
     {
       "name": "ai-service",
-      "image": "<IMAGE>",
+      "image": "514585225124.dkr.ecr.us-east-1.amazonaws.com/backend/uni-rec:ai-service:v1.00",
       "cpu": 1024,
       "memory": 4096,
       "memoryReservation": 2048,
