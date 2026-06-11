@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY . .
 
 # Expose the port FastAPI will run on
-EXPOSE 80
+EXPOSE 8000
 
 # Run the FastAPI application using the official CLI (FastAPI CLI)
-CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "80"]
+CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]

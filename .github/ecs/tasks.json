@@ -2,23 +2,32 @@
   "family": "uni-rec-ai-service",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": "2048",
-  "memory": "6144",
   "runtimePlatform": {
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
   },
-  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/uni-rec-ecs-execution-role",
-  "taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/uni-rec-ecs-task-role",
+  "executionRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-role",
+  "taskRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-app-role",
   "containerDefinitions": [
     {
       "name": "ai-service",
       "image": "<IMAGE>",
+      "cpu": 2048,
+      "memory": 4096,
+      "memoryReservation": 2048,
       "essential": true,
+    "environmentFiles": [
+        {
+            "value": "arn:aws:s3:::unirec-s3-bucket/uni-rec-ai.env",
+            "type": "s3"
+        }
+    ],
       "portMappings": [
         {
-          "name": "http",
-          "containerPort": 80,
+          "name": "ai_service_container-tcp",
+          "appProtocol": "http",
+          "containerPort": 8000,
+          "hostPort": 8000,
           "protocol": "tcp"
         }
       ],
