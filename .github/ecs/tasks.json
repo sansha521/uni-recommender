@@ -7,7 +7,7 @@
     "operatingSystemFamily": "LINUX"
   },
   "executionRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-role",
-  "taskRoleArn": "arn:aws:iam:::514585225124:role/uni-rec-ecs-role",
+  "taskRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-app-role",
   "containerDefinitions": [
     {
       "name": "ai-service",
@@ -20,7 +20,7 @@
         {
           "name": "ai_service_container-tcp",
           "appProtocol": "http",
-          "containerPort": 80,
+          "containerPort": 8000,
           "hostPort": 8000,
           "protocol": "tcp"
         }
