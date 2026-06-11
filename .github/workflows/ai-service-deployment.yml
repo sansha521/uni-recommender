@@ -53,7 +53,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}   # immutable, traceable tag per commit
+          IMAGE_TAG: ai-service-v1.00   # NOTE: mutable for testing purpose, traceable tag per commit
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ai/Dockerfile ai/
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
