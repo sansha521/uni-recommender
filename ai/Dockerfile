@@ -31,10 +31,13 @@ WORKDIR /app
 # Copy only the requirements file first to leverage Docker cache
 COPY requirements.txt .
 
-
 # Install dependencies without saving cache to keep image small
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && find /usr/local/lib/python3.13 -name '__pycache__' -type d -exec rm -rf {} + \
+    && find /usr/local/lib/python3.13 -name 'tests' -type d -exec rm -rf {} + \
+    && find /usr/local/lib/python3.13 -name '*.pyc' -delete \
+    && rm -rf /root/.cache
 
 # Copy the rest of the application code
 COPY . .
