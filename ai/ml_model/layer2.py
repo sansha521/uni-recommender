@@ -6,33 +6,54 @@ vector search function
 Output: 5 best universities
 """
 
+from pathlib import Path
+
 import boto3
+import chromadb
+import onnxruntime as ort
+import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
-# from sentence_transformers import SentenceTransformer
-
-import chromadb
+from tokenizers import Tokenizer
 
 from ..utils import load_local_data
 
 load_dotenv()
 
-import numpy as np
-from pathlib import Path
-from transformers import AutoTokenizer
-import onnxruntime as ort
 
 _MODELS_DIR = Path(__file__).parent / "models"
 session_google = ort.InferenceSession(str(_MODELS_DIR / "google_embeddings.onnx"))
 session_wikipedia = ort.InferenceSession(str(_MODELS_DIR / "wikipedia_embeddings.onnx"))
 
-tokenizer_google = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-tokenizer_wikipedia = AutoTokenizer.from_pretrained("sentence-transformers/multi-qa-mpnet-base-dot-v1")
+tokenizer_google = Tokenizer.from_file(str(_MODELS_DIR / "google_tokenizer.json"))
+tokenizer_wikipedia = Tokenizer.from_file(str(_MODELS_DIR / "wikipedia_tokenizer.json"))
+tokenizer_google.enable_truncation(max_length=256)
+tokenizer_wikipedia.enable_truncation(max_length=512)
 
-def _encode(session, tokenizer, text: str) -> list:
-    inputs = tokenizer(text, return_tensors="np", truncation=True, padding=True)
-    outputs = session.run(None, dict(inputs))
-    embedding = outputs[0].mean(axis=1).squeeze()
+
+def _encode(session, tokenizer: Tokenizer, text: str, pooling: str) -> list:
+    enc = tokenizer.encode(text)
+    input_ids = np.array([enc.ids], dtype=np.int64)
+    attention_mask = np.array([enc.attention_mask], dtype=np.int64)
+    inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
+
+    expected = {i.name for i in session.get_inputs()}
+    if "token_type_ids" in expected:
+        inputs["token_type_ids"] = np.array([enc.type_ids], dtype=np.int64)
+
+    outputs = session.run(None, inputs)
+
+    if pooling == "cls":
+        embedding = outputs[0][:, 0].squeeze()
+    elif pooling == "mean":
+        mask = attention_mask[..., None].astype("float32")
+        summed = (outputs[0] * mask).sum(axis=1)
+        counts = np.clip(mask.sum(axis=1), 1e-9, None)
+        embedding = (summed / counts).squeeze()
+    else:
+        raise ValueError(f"unknown pooling: {pooling}")
+
+    # NO normalization — both indexes built with normalize_embeddings=False
     return embedding.astype("float32").tolist()
 
 
@@ -63,7 +84,7 @@ s3vectors = boto3.client("s3vectors", region_name=REGION)
 
 def query_s3_vector(user_prompt: str) -> list[int]:
     # Embed the prompt
-    embeddings = _encode(session_google, tokenizer_google, user_prompt)
+    embeddings = _encode(session_google, tokenizer_google, user_prompt, "mean")
 
     # Call the Vector Bucket
     response = s3vectors.query_vectors(
@@ -82,7 +103,7 @@ def query_s3_vector(user_prompt: str) -> list[int]:
 
 def query_s3_wikipedia(user_prompt: str) -> list[str]:
     # Embed the prompt
-    embeddings = _encode(session_wikipedia, tokenizer_wikipedia, user_prompt)
+    embeddings = _encode(session_wikipedia, tokenizer_wikipedia, user_prompt, "cls")
 
     # Call the Vector Bucket
     response = s3vectors.query_vectors(
