@@ -4,4 +4,3 @@
 
 Find the right univesty for you based on your budget, grades, degree, specialization, weather, big city/small city, you name it!
 
-Tech stack
