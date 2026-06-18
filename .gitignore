@@ -248,3 +248,5 @@ dataset-research/
 # ONNX model files (too large for GitHub)
 *.onnx
 ai/ml_model/models/
+
+test.py

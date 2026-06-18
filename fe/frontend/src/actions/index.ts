@@ -1,4 +1,5 @@
 import { defineAction } from 'astro:actions';
+import { API_URL } from "astro:env/client"
 import { z } from 'astro/zod';
 
 export const server = {
@@ -16,7 +17,7 @@ export const server = {
         handler: async (input) => {
             const { budget_min, budget_max, score_type, score, region, qualities } = input;
 
-            const response = await fetch("http://localhost:8000/prompt/", {
+            const response = await fetch(`${API_URL}/prompt`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
