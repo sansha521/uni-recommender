@@ -1,6 +1,6 @@
 ---
 // src/pages/user_query_form.astro
-import { Select } from 'free-astro-components'
+import { Select, Input, Textarea, Button } from 'free-astro-components'
 import Header from '../components/Header.astro';
 // const title = "About Me";
 ---
@@ -12,91 +12,410 @@ import Header from '../components/Header.astro';
   </head>
   <body>
     <Header />
-      <!-- <h1>{title}</h1> -->
-      <p>Find your dream university!</p>
-    <h1>Tell us a bit about what you are looking for...</h1>
-    <form>
-      <label>
-        Budget range
-        <Select
-          name="budget_min"
-          label="Lowest budget point"
-          options={[
-            { value: '0', label: '0' },
-            { value: '5000', label: '5,000' },
-            { value: '7500', label: '7,500' },
-            { value: '10000', label: '10,000'},
-            { value: '30000', label: '30,000'},
-            { value: '50000', label: '50,000'}
-          ]}
-          placeholder="Cannot select"
+
+    <main class="form-page">
+      <header class="form-intro">
+        <h1>Tell us what you're looking for</h1>
+        <p>Answer a few questions and we'll find you the right universities.</p>
+      </header>
+
+      <form class="query-card">
+        <fieldset class="field-group">
+          <legend>Budget range</legend>
+          <div class="grid-2">
+            <Select
+              name="budget_min"
+              label="Minimum (USD)"
+              options={[
+                { value: '', label: 'Select minimum' },
+                { value: '0', label: '0' },
+                { value: '5000', label: '5,000' },
+                { value: '7500', label: '7,500' },
+                { value: '10000', label: '10,000'},
+                { value: '30000', label: '30,000'},
+                { value: '50000', label: '50,000'},
+                { value: '75000', label: '75,000' },
+                { value: '100000', label: '100,000'}
+              ]}
+              placeholder="Select minimum"
+            />
+            <Select
+              name="budget_max"
+              label="Maximum (USD)"
+              options={[
+                { value: '', label: 'Select maximum' },
+                { value: '5000', label: '5,000' },
+                { value: '10000', label: '10,000' },
+                { value: '30000', label: '30,000' },
+                { value: '50000', label: '50,000' },
+                { value: '75000', label: '75,000' },
+                { value: '100000', label: '100,000'}
+              ]}
+              placeholder="Select maximum"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset class="field-group">
+          <legend>Scores</legend>
+          <div class="grid-2">
+            <Select
+              name="score_type"
+              label="Score type"
+              options={[
+                { value: '', label: 'Select type' },
+                { value: 'SAT', label: 'SAT' },
+                { value: 'ACT', label: 'ACT' }
+              ]}
+              placeholder="Select type"
+            />
+            <Input
+              name="score"
+              type="number"
+              label="Score"
+              placeholder="e.g. 1400"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset class="field-group">
+          <legend>Region</legend>
+          <Select
+            name="region"
+            label="Preferred region"
+            options={[
+              { value: '', label: 'Choose a region' },
+              { value: 'northeast', label: 'northeast' },
+              { value: 'midatlantic', label: 'midatlantic' },
+              { value: 'midwest', label: 'midwest' },
+              { value: 'west', label: 'west' },
+              { value: 'southeast', label: 'southeast'},
+              { value: 'southwest', label: 'southwest'},
+              { value: 'northwest', label: 'northwest'}
+            ]}
+            placeholder="Choose a region"
+          />
+        </fieldset>
+
+        <fieldset class="field-group">
+          <legend>What matters to you</legend>
+          <Textarea
+            name="qualities"
+            label="Qualities"
+            placeholder="e.g. small campus, strong CS program, warm climate"
+          />
+        </fieldset>
+
+        <Button
+          label="Find matches"
+          type="submit"
+          variant="primary"
+          class="submit-btn"
         />
-        <Select
-          name="budget_max"
-          label="Highest budget point"
-          options={[
-            { value: '5000', label: '5,000' },
-            { value: '75000', label: '75,000' },
-            { value: '10000', label: '10,000' },
-            { value: '30000', label: '30,000' },
-            { value: '50000', label: '50,000 '},
-            { value: '100000', label: '100,000'}
-          ]}
-          placeholder="Cannot select"
-        />
-      </label>
-      <label>
-        Score type
-        <Select
-          name="score_type"
-          label="Score type"
-          options={[
-            { value: 'ACT', label: 'ACT' },
-            { value: 'SAT', label: 'SAT' }
-          ]}
-          placeholder="Cannot select"
-        />
-      </label>
-      <label>
-        Score
-        <input type="number" name="score" />
-      </label>
-      <label>
-        Region
-        <Select
-          name="region"
-          label="Choose the region that you want to study in."
-          options={[
-            { value: 'northeast', label: 'northeast' },
-            { value: 'midatlantic', label: 'midatlantic' },
-            { value: 'midwest', label: 'midwest' },
-            { value: 'west', label: 'west' },
-            { value: 'southeast', label: 'southeast'},
-            { value: 'southwest', label: 'southwest'},
-            { value: 'northwest', label: 'northwest'}
-          ]}
-          placeholder="Cannot select"
-        />
-      </label>
-      <label>
-        Any qualities that you are looking for in a university
-        <textarea
-          name="qualities"
-          placeholder="e.g. small campus, strong CS program, warm climate"
-        ></textarea>
-      </label>
-      <button>Submit</button>
-    </form>
+      </form>
+    </main>
   </body>
 </html>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap");
+
+  body {
+    background-color: #f1f5f9;
+  }
+
+  .form-page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .form-intro {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-intro h1 {
+    margin: 0 0 0.5rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: #111827;
+  }
+
+  .form-intro p {
+    margin: 0;
+    color: #6b7280;
+  }
+
+  .query-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .field-group {
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .field-group legend {
+    padding: 0;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  /* Button renders in its own scope; reach it from the scoped parent */
+  .query-card :global(.submit-btn) {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  /* Validation message injected by the client script (lives in the
+     library component's scope, so reach it via :global) */
+  .query-card :global(.score-error) {
+    display: none;
+    color: #dc2626;
+    font-size: 0.8rem;
+  }
+
+  /* The chevron icon sits on top of the native <select> and otherwise
+     swallows clicks; let them fall through so clicking the arrow opens
+     the dropdown too. */
+  .query-card :global(.ac-select-icon) {
+    pointer-events: none;
+  }
+
+  /* The empty "no response" option is always first in each list; render it
+     as muted italic so it reads as a non-value, distinct from real options.
+     The dashes are added via pseudo-elements here only (not in the option's
+     text) so the field itself shows the plain placeholder when selected. */
+  .query-card :global(.ac-select-list > li:first-child > button) {
+    font-style: italic;
+    color: #9ca3af;
+  }
+
+  .query-card :global(.ac-select-list > li:first-child > button > span::before) {
+    content: "— ";
+  }
+
+  .query-card :global(.ac-select-list > li:first-child > button > span::after) {
+    content: " —";
+  }
+
+  /* It's a "no response" choice, not a real value — never show the checkmark. */
+  .query-card :global(.ac-select-list > li:first-child > button > svg) {
+    display: none;
+  }
+
+  /* The list scrolls when it overflows, but the library hides the scrollbar.
+     Show a slim one so it's clear there are more options below. */
+  .query-card :global(.ac-select-list) {
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+  }
+
+  .query-card :global(.ac-select-list::-webkit-scrollbar) {
+    width: 8px;
+  }
+
+  .query-card :global(.ac-select-list::-webkit-scrollbar-thumb) {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .query-card :global(.ac-select-list::-webkit-scrollbar-track) {
+    background: transparent;
+  }
+
+  @media (max-width: 520px) {
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 
 
 <script>
   import { API_URL } from 'astro:env/client';
 
   const form = document.querySelector('form');
+
+  // Keep the muted/placeholder text color when the empty option is chosen.
+  // The library sets data-selected="true" on any pick (darker text); revert
+  // it whenever the resulting value is empty.
+  form?.querySelectorAll('[data-select]').forEach((el) => {
+    const select = el as HTMLSelectElement;
+    select
+      .closest('[data-select-wrapper]')
+      ?.querySelectorAll('[data-select-option]')
+      .forEach((option) =>
+        option.addEventListener('click', () =>
+          setTimeout(() => {
+            if (select.value === '') {
+              select.setAttribute('data-selected', 'false');
+            }
+          }, 0),
+        ),
+      );
+  });
+
+  // --- Link budget min/max: max only shows values >= min, and vice versa ---
+  const budgetMin = form?.querySelector('[name="budget_min"]') as HTMLSelectElement | null;
+  const budgetMax = form?.querySelector('[name="budget_max"]') as HTMLSelectElement | null;
+
+  // The placeholder <option> has no value attribute, so an untouched select
+  // reports its label text (e.g. "Select maximum") as the value. Treat that
+  // (and the empty option) as "no constraint" rather than NaN.
+  const selectedNumber = (select: HTMLSelectElement): number | null => {
+    const n = Number(select.value);
+    return select.value === '' || Number.isNaN(n) ? null : n;
+  };
+
+  // Popover <li> items map 1:1 to the options array; the native <select> has
+  // an extra placeholder at index 0, so li[i] <-> select.options[i + 1].
+  const filterSelect = (
+    select: HTMLSelectElement,
+    allow: (value: number) => boolean,
+  ) => {
+    const wrapper = select.closest('[data-select-wrapper]');
+    const items = Array.from(wrapper?.querySelectorAll('.ac-select-list > li') ?? []);
+
+    items.forEach((li, i) => {
+      const option = select.options[i + 1];
+      if (!option) return;
+      const show = option.value === '' || allow(Number(option.value));
+      (li as HTMLElement).style.display = show ? '' : 'none';
+      option.disabled = !show;
+    });
+
+    // If the current selection is now out of range, reset it to empty.
+    const current = selectedNumber(select);
+    if (current !== null && !allow(current)) {
+      select.value = '';
+      select.setAttribute('data-selected', 'false');
+      wrapper
+        ?.querySelectorAll('[data-select-option]')
+        .forEach((button) => button.setAttribute('aria-selected', 'false'));
+    }
+  };
+
+  const applyBudgetConstraints = () => {
+    if (!budgetMin || !budgetMax) return;
+    const minVal = selectedNumber(budgetMin);
+    filterSelect(budgetMax, (v) => minVal === null || v >= minVal);
+    const maxVal = selectedNumber(budgetMax);
+    filterSelect(budgetMin, (v) => maxVal === null || v <= maxVal);
+  };
+
+  [budgetMin, budgetMax].forEach((select) => {
+    select
+      ?.closest('[data-select-wrapper]')
+      ?.querySelectorAll('[data-select-option]')
+      .forEach((option) =>
+        option.addEventListener('click', () => setTimeout(applyBudgetConstraints, 0)),
+      );
+  });
+
+  applyBudgetConstraints();
+
+  // --- Score validation (SAT 400-1600, ACT 1-36) ---
+  const SCORE_RANGES: Record<string, { min: number; max: number }> = {
+    SAT: { min: 400, max: 1600 },
+    ACT: { min: 1, max: 36 },
+  };
+
+  const scoreInput = form?.querySelector('[name="score"]') as HTMLInputElement | null;
+  const scoreTypeSelect = form?.querySelector('[name="score_type"]') as HTMLSelectElement | null;
+
+  let scoreError: HTMLSpanElement | null = null;
+  if (scoreInput) {
+    scoreError = document.createElement('span');
+    scoreError.className = 'score-error';
+    scoreError.setAttribute('aria-live', 'polite');
+    scoreInput.closest('.ac-input-wrapper')?.appendChild(scoreError);
+  }
+
+  const validateScore = () => {
+    if (!scoreInput) return true;
+
+    const clearError = () => {
+      scoreInput.classList.remove('ac-input--error');
+      scoreInput.removeAttribute('aria-invalid');
+      if (scoreError) {
+        scoreError.textContent = '';
+        scoreError.style.display = 'none';
+      }
+      return true;
+    };
+
+    const raw = scoreInput.value.trim();
+    if (raw === '') return clearError(); // score is optional
+
+    const type = scoreTypeSelect?.value ?? '';
+    const range = SCORE_RANGES[type];
+
+    let message = '';
+    if (!range) {
+      message = 'Select a score type first.';
+    } else {
+      const value = Number(raw);
+      if (Number.isNaN(value) || value < range.min || value > range.max) {
+        message = `${type} score must be between ${range.min} and ${range.max}.`;
+      }
+    }
+
+    if (message) {
+      scoreInput.classList.add('ac-input--error');
+      scoreInput.setAttribute('aria-invalid', 'true');
+      if (scoreError) {
+        scoreError.textContent = message;
+        scoreError.style.display = 'block';
+      }
+      return false;
+    }
+
+    return clearError();
+  };
+
+  scoreInput?.addEventListener('input', validateScore);
+  scoreInput?.addEventListener('blur', validateScore);
+
+  // The custom Select doesn't emit a 'change' event; it just updates
+  // select.selectedIndex when an option button is clicked. Re-validate
+  // after that runs (next tick) so a score-type switch is reflected live.
+  scoreTypeSelect
+    ?.closest('[data-select-wrapper]')
+    ?.querySelectorAll('[data-select-option]')
+    .forEach((option) =>
+      option.addEventListener('click', () => setTimeout(validateScore, 0)),
+    );
+
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    if (!validateScore()) {
+      scoreInput?.focus();
+      return;
+    }
+
     const formData = new FormData(form);
 
     const toInt = (value: FormDataEntryValue | null) => {

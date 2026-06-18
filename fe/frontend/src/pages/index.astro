@@ -1,13 +1,157 @@
 ---
+import { Button } from 'free-astro-components';
 import Header from '../components/Header.astro';
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <title>FindMyUni</title>
   </head>
   <body>
     <Header />
-	<h1>Find the right university for you.</h1>
+
+    <main class="home">
+      <section class="hero">
+        <h1>Find the right university for you.</h1>
+        <p class="hero-sub">
+          Tell us your budget, scores, and what you care about — and we'll match
+          you with the universities that fit best.
+        </p>
+		<p class="hero-sub">
+			Great for prospective students, whether you are an exchange students, international students, undergraduate, master's or PhD students who are looking to find the right university for them. Currently US universities only.
+		</p>
+        <Button
+          href="/query/"
+          label="Find Universities"
+          variant="primary"
+          class="hero-cta"
+        />
+      </section>
+
+      <section class="how">
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">1</span>
+            <h3>Tell us your preferences</h3>
+            <p>Share your budget, test scores, preferred region, and what matters to you.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">2</span>
+            <h3>We analyze your response</h3>
+            <p>Our recommender weighs your answers against thousands of universities.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">3</span>
+            <h3>Get your top matches</h3>
+            <p>Receive a ranked shortlist with clear reasoning for each recommended unviersity or college.</p>
+          </li>
+        </ol>
+      </section>
+    </main>
   </body>
 </html>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap");
+
+  body {
+    background-color: #f1f5f9;
+  }
+
+  .home {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 3rem 1rem 3.5rem;
+  }
+
+  .hero h1 {
+    margin: 0 0 1rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 700;
+    font-size: 2.75rem;
+    line-height: 1.15;
+    color: #111827;
+  }
+
+  .hero-sub {
+    margin: 0 auto 2rem;
+    max-width: 36rem;
+    font-size: 1.15rem;
+    color: #4b5563;
+  }
+
+  /* How it works */
+  .how {
+    margin-top: 1rem;
+  }
+
+  .how h2 {
+    text-align: center;
+    margin: 0 0 1.75rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: #111827;
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .step {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    padding: 1.5rem;
+  }
+
+  .step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: rgb(64, 93, 255);
+    color: #ffffff;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+  }
+
+  .step h3 {
+    margin: 0.9rem 0 0.4rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+  }
+
+  .step p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 720px) {
+    .hero h1 {
+      font-size: 2.1rem;
+    }
+
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
