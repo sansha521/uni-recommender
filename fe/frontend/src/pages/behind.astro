@@ -1,0 +1,189 @@
+---
+import { Button } from 'free-astro-components';
+import Header from '../components/Header.astro';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Behind the Scenes — CampusMatch</title>
+  </head>
+  <body>
+    <Header />
+
+    <main class="behind">
+      <section class="hero">
+        <h1>Our strategy.</h1>
+        <p class="hero-sub">
+          We take the information you provided us and filter universities based on your minimum
+          requirements, then your personal preferences. You can chat with our AI
+          agent for more personlaized recommendations.
+        </p>
+      </section>
+
+      <section class="how">
+        <h2>Our steps to find the right university for you</h2>
+        <ol class="flow">
+          <li class="step">
+            <span class="step-num">1</span>
+            <h3>Filter by your minimum requirements</h3>
+            <p>We narrow the field using your budget, test scores, and preferred region — your non-negotiables.</p>
+          </li>
+          <li class="flow-arrow" aria-hidden="true"></li>
+          <li class="step">
+            <span class="step-num">2</span>
+            <h3>Rank by your personal preferences</h3>
+            <p>Your written qualities — what matters most to you — reorder the shortlist to fit who you are.</p>
+          </li>
+          <li class="flow-arrow" aria-hidden="true"></li>
+          <li class="step">
+            <span class="step-num">3</span>
+            <h3>Chat with our AI agent for more advice</h3>
+            <p>Ask questions and refine your results to discover what's truly right for you.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="cta">
+        <Button
+          href="/query/"
+          label="Find Universities"
+          variant="primary"
+        />
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap");
+
+  body {
+    background-color: #f1f5f9;
+  }
+
+  .behind {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 3rem 1rem 2.5rem;
+  }
+
+  .hero h1 {
+    margin: 0 0 1rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 700;
+    font-size: 2.75rem;
+    line-height: 1.15;
+    color: #111827;
+  }
+
+  .hero-sub {
+    margin: 0 auto;
+    max-width: 40rem;
+    font-size: 1.15rem;
+    color: #4b5563;
+  }
+
+  /* Process */
+  .how {
+    margin-top: 1rem;
+  }
+
+  .how h2 {
+    text-align: center;
+    margin: 0 0 1.75rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: #111827;
+  }
+
+  .flow {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+
+  .step {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    padding: 1.5rem;
+  }
+
+  /* Arrow connectors: real flex items, so they center in the gap between
+     cards rather than hanging off the previous card. */
+  .flow-arrow {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: rgb(64, 93, 255);
+  }
+
+  .flow-arrow::before {
+    content: "→";
+  }
+
+  .step-num {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: rgb(64, 93, 255);
+    color: #ffffff;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+  }
+
+  .step h3 {
+    margin: 0.9rem 0 0.4rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+  }
+
+  .step p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+
+  @media (max-width: 720px) {
+    .hero h1 {
+      font-size: 2.1rem;
+    }
+
+    .flow {
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Point the connectors downward when the cards stack. */
+    .flow-arrow::before {
+      content: "↓";
+    }
+  }
+</style>
