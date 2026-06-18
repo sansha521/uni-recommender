@@ -1,4 +1,4 @@
-# Stage 1 — ColBERT v2 and export to ONNX + int8 quantization
+# Stage 1 — export embedding models to ONNX + int8 dynamic quantization
 FROM python:3.13-slim AS builder
 
 WORKDIR /build

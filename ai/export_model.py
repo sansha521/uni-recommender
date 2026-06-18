@@ -10,7 +10,8 @@ Output: ai/ml_model/models/google_embeddings.onnx
 import shutil
 from pathlib import Path
 
-from optimum.onnxruntime import ORTModelForFeatureExtraction
+from optimum.onnxruntime import ORTModelForFeatureExtraction, ORTQuantizer
+from optimum.onnxruntime.configuration import AutoQuantizationConfig
 from transformers import AutoTokenizer
 
 OUTPUT_DIR = Path(__file__).parent / "ml_model" / "models"
@@ -39,8 +40,16 @@ for model_name, onnx_filename, tokenizer_filename in MODELS:
     model.save_pretrained(tmp_dir)
     tokenizer.save_pretrained(tmp_dir)
 
-    # Move the ONNX file to the final path
-    (tmp_dir / "model.onnx").rename(OUTPUT_DIR / onnx_filename)
+    # int8 dynamic quantization — shrinks the weights ~4x to cut the runtime
+    # memory footprint (the mpnet model drops from ~420MB to ~110MB of RSS).
+    # avx2 (not avx512_vnni) keeps the quantized model portable across the
+    # mixed CPU hardware Fargate may schedule the task onto.
+    quantizer = ORTQuantizer.from_pretrained(tmp_dir)
+    qconfig = AutoQuantizationConfig.avx2(is_static=False, per_channel=True)
+    quantizer.quantize(save_dir=tmp_dir, quantization_config=qconfig)
+
+    # Move the quantized ONNX file to the final path
+    (tmp_dir / "model_quantized.onnx").rename(OUTPUT_DIR / onnx_filename)
 
     # Copy the fast tokenizer JSON to the final path (renamed per-model)
     src_tokenizer = tmp_dir / "tokenizer.json"

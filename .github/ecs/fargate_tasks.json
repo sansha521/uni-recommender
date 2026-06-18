@@ -4,8 +4,8 @@
     "requiresCompatibilities": [
         "FARGATE"
     ],
-    "cpu": "2048",
-    "memory": "4096",
+    "cpu": "256",
+    "memory": "512",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
@@ -16,9 +16,8 @@
         {
             "name": "ai-service",
             "image": "<IMAGE>",
-            "cpu": 2048,
-            "memory": 4096,
-            "memoryReservation": 2048,
+            "cpu": 256,
+            "memory": 512,
             "essential": true,
             "environmentFiles": [
                 {
