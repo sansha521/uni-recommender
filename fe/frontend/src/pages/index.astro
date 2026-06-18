@@ -1,13 +1,33 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-import Navigation from '../components/Navigation.astro';
+import { Select } from 'free-astro-components'
 import Header from '../components/Header.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <Header />
+	<h1>Find the right university for you.</h1>
+  </body>
+</html>
+
+
+<script>
+  import { actions } from 'astro:actions';
+
+  const form = document.querySelector('form');
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const { data, error } = await actions.userquery(formData);
+    if (!error && data) {
+      window.location.href = `/results?data=${encodeURIComponent(JSON.stringify(data))}`;
+    } else {
+      console.error("Error fetching recommendations:", error);
+    }
+  });
+</script>
