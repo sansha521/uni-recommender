@@ -3,8 +3,8 @@
 const links = [
   { href: "/", label: "Home" },
   { href: "/query/", label: "Find Universities" },
-  { href: "/results/", label: "About" },
-  { href: "/behind-the-scenes/", label: "Behind the Scenes" },
+  // { href: "/results/", label: "About" },
+  { href: "/behind/", label: "Behind the Scenes" },
 ];
 
 const pathname = Astro.url.pathname;
@@ -15,7 +15,7 @@ const isActive = (href: string) =>
 <nav id="main-menu" class="nav-bar">
   <a href="/" class="nav-brand">
     <img src="/icon.png" alt="FindMyUni" class="nav-logo" />
-    <span class="nav-wordmark">FindMyUni</span>
+    <span class="nav-wordmark">CampusMatch</span>
   </a>
 
   <div class="nav-links">
