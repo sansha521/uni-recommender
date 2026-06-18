@@ -1,0 +1,48 @@
+{
+    "family": "uni-rec-ai-service",
+    "networkMode": "bridge",
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "executionRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-role",
+    "taskRoleArn": "arn:aws:iam::514585225124:role/uni-rec-ecs-app-role",
+    "containerDefinitions": [
+        {
+            "name": "ai-service",
+            "image": "<IMAGE>",
+            "cpu": 768,
+            "memory": 850,
+            "memoryReservation": 600,
+            "essential": true,
+            "environment": [
+                { "name": "TOKENIZERS_PARALLELISM", "value": "false" },
+                { "name": "OMP_NUM_THREADS", "value": "1" }
+            ],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::unirec-s3-bucket/uni-rec-ai.env",
+                    "type": "s3"
+                }
+            ],
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "hostPort": 0,
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/uni-rec-ai-service",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ]
+}
