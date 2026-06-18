@@ -172,24 +172,43 @@ jobs:
       - name: Check if ECS service already has a load balancer
         id: svc_check
         run: |
-          LB_COUNT=$(aws ecs describe-services \
+          # Count active services with this name (0 = doesn't exist, 1 = exists)
+          SVC_COUNT=$(aws ecs describe-services \
             --cluster "$ECS_CLUSTER" \
             --services "$ECS_SERVICE" \
-            --query "length(services[0].loadBalancers)" --output text 2>/dev/null || echo "0")
-          echo "lb_count=$LB_COUNT" >> "$GITHUB_OUTPUT"
-          echo "Load balancers on current service: $LB_COUNT"
+            --query "length(services[?status!='INACTIVE'])" --output text 2>/dev/null || echo "0")
+
+          if [ "$SVC_COUNT" = "0" ]; then
+            # Service doesn't exist — needs to be created
+            echo "needs_create=true" >> "$GITHUB_OUTPUT"
+            echo "Service does not exist; will create."
+          else
+            # Service exists — check if it already has a load balancer
+            LB_COUNT=$(aws ecs describe-services \
+              --cluster "$ECS_CLUSTER" \
+              --services "$ECS_SERVICE" \
+              --query "length(services[0].loadBalancers)" --output text)
+            if [ "$LB_COUNT" = "0" ]; then
+              echo "needs_create=true" >> "$GITHUB_OUTPUT"
+              echo "Service exists but has no load balancer; will delete and recreate."
+            else
+              echo "needs_create=false" >> "$GITHUB_OUTPUT"
+              echo "Service already has a load balancer attached — skipping recreation."
+            fi
+          fi
 
       - name: Delete ECS service (if no load balancer attached yet)
-        if: steps.svc_check.outputs.lb_count == '0'
+        if: steps.svc_check.outputs.needs_create == 'true'
         run: |
+          # --force is a no-op if the service doesn't exist; suppress the error
           aws ecs delete-service \
             --cluster "$ECS_CLUSTER" \
             --service "$ECS_SERVICE" \
-            --force
+            --force 2>/dev/null || true
           echo "Waiting for service to drain..."
           aws ecs wait services-inactive \
             --cluster "$ECS_CLUSTER" \
-            --services "$ECS_SERVICE"
+            --services "$ECS_SERVICE" 2>/dev/null || true
 
       - name: Get latest active task definition ARN
         id: taskdef
@@ -201,7 +220,7 @@ jobs:
           echo "Task definition: $TD_ARN"
 
       - name: Recreate ECS service with ALB target group
-        if: steps.svc_check.outputs.lb_count == '0'
+        if: steps.svc_check.outputs.needs_create == 'true'
         run: |
           SUBNETS=$(echo "${{ steps.vpc.outputs.subnet_ids }}" | tr ',' ' ' | \
             awk '{for(i=1;i<=NF;i++) printf "\"%s\",", $i}' | sed 's/,$//')
