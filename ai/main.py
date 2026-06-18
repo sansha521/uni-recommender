@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 
 from fastapi import FastAPI
@@ -20,10 +22,13 @@ class UserPromptModel(BaseModel):
 
 app = FastAPI()
 
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:4321")
+allowed_origins = [o.strip() for o in _raw_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4321"],
-    allow_methods=["POST"],
+    allow_origins=allowed_origins,
+    allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
 )
 
