@@ -1,8 +1,5 @@
 ---
 import Header from '../components/Header.astro';
-
-const raw = Astro.url.searchParams.get("data") || "[]";
-const recommendations: { name: string; reasoning: string }[] = JSON.parse(raw);
 ---
 
 <html lang="en">
@@ -14,11 +11,35 @@ const recommendations: { name: string; reasoning: string }[] = JSON.parse(raw);
     <Header />
     <h1>Your Top University Recommendations</h1>
 
-    {recommendations.map((rec, i) => (
-      <div>
-        <h2>{i + 1}. {rec.name}</h2>
-        <p>{rec.reasoning}</p>
-      </div>
-    ))}
+    <div id="recommendations"></div>
   </body>
 </html>
+
+<script>
+  type Recommendation = { name: string; reasoning: string };
+
+  const raw = new URLSearchParams(window.location.search).get('data') || '[]';
+
+  let recommendations: Recommendation[] = [];
+  try {
+    recommendations = JSON.parse(raw);
+  } catch (error) {
+    console.error('Could not parse recommendations:', error);
+  }
+
+  const container = document.getElementById('recommendations');
+  if (container) {
+    recommendations.forEach((rec, i) => {
+      const wrapper = document.createElement('div');
+
+      const title = document.createElement('h2');
+      title.textContent = `${i + 1}. ${rec.name}`;
+
+      const reasoning = document.createElement('p');
+      reasoning.textContent = rec.reasoning;
+
+      wrapper.append(title, reasoning);
+      container.append(wrapper);
+    });
+  }
+</script>

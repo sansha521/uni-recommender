@@ -1,7 +1,4 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-import { Select } from 'free-astro-components'
 import Header from '../components/Header.astro';
 ---
 
@@ -14,20 +11,3 @@ import Header from '../components/Header.astro';
 	<h1>Find the right university for you.</h1>
   </body>
 </html>
-
-
-<script>
-  import { actions } from 'astro:actions';
-
-  const form = document.querySelector('form');
-  form?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const formData = new FormData(form);
-    const { data, error } = await actions.userquery(formData);
-    if (!error && data) {
-      window.location.href = `/results?data=${encodeURIComponent(JSON.stringify(data))}`;
-    } else {
-      console.error("Error fetching recommendations:", error);
-    }
-  });
-</script>
