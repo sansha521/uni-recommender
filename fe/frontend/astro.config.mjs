@@ -6,7 +6,7 @@ export default defineConfig({
     output: 'static',
     env: {
         schema: {
-            API_URL: envField.string({ context: "client", access: "public", default: "http://localhost:8000/" })
+            API_URL: envField.string({ context: "client", access: "public", default: "http://localhost:8000" })
         }
     }
 });
