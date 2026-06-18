@@ -18,12 +18,12 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1                       # AWS region
-  ECR_REPOSITORY: backend/uni-rec             # Amazon ECR repository name
-  ECS_CLUSTER: uni-rec-cluster                # ECS cluster name
-  ECS_SERVICE: uni-rec-ai-service             # ECS service name
-  ECS_TASK_DEFINITION: .github/ecs/tasks.json # path to the task definition template
-  CONTAINER_NAME: ai-service                  # must match the container name in tasks.json
+  AWS_REGION: us-east-1                               # AWS region
+  ECR_REPOSITORY: backend/uni-rec                     # Amazon ECR repository name
+  ECS_CLUSTER: uni-rec-cluster                        # ECS cluster name
+  ECS_SERVICE: uni-rec-ai-service                     # ECS service name
+  ECS_TASK_DEFINITION: .github/ecs/fargate_tasks.json # path to the task definition template
+  CONTAINER_NAME: ai-service                          # must match the container name in tasks.json
 
 permissions:
   contents: read

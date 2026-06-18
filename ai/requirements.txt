@@ -1,7 +1,7 @@
 fastapi[standard]==0.136.3
 pydantic-settings==2.14.1
 python-dotenv==1.2.2
-transformers>=4.36,<4.52
+tokenizers==0.21.4
 onnxruntime==1.22.0
 pandas==3.0.1
 chromadb==1.5.9
