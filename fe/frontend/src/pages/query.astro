@@ -16,7 +16,7 @@ import Header from '../components/Header.astro';
     <main class="form-page">
       <header class="form-intro">
         <h1>Tell us what you're looking for</h1>
-        <p>Answer a few questions and we'll find you the right universities.</p>
+        <p>Let us know a bit about youre preferenecs and we'll find you the right universities.</p>
       </header>
 
       <form class="query-card">
@@ -444,7 +444,8 @@ import Header from '../components/Header.astro';
 
       const data = await response.json();
       const recommendations = data.recommendations;
-      window.location.href = `/results?data=${encodeURIComponent(JSON.stringify(recommendations))}`;
+      localStorage.setItem('recommendations', JSON.stringify(recommendations));
+      window.location.href = '/results';
     } catch (error) {
       console.error('Error fetching recommendations:', error);
     }
