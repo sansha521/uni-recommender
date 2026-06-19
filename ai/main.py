@@ -1,3 +1,4 @@
+import json
 import os
 
 from dotenv import load_dotenv
@@ -7,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .ml_model import layer1, layer2, layer3
+from .ml_model.layer3 import MODEL_ID, client
 
 load_dotenv()
 
@@ -18,6 +20,18 @@ class UserPromptModel(BaseModel):
     score_type: str | None = None
     score: int | None = None
     region: str | None = None
+
+
+class ChatMessage(BaseModel):
+    role: str   # "user" or "assistant"
+    content: str
+
+
+class ChatRequest(BaseModel):
+    original_context: dict
+    current_recommendations: list[dict]
+    conversation_history: list[ChatMessage]
+    new_message: str
 
 
 app = FastAPI()
@@ -61,3 +75,58 @@ async def query_embeddings(user_prompt: UserPromptModel):
     )
 
     return {"recommendations": recommendations}
+
+
+@app.post("/chat/")
+async def chat(request: ChatRequest):
+    recs_text = "\n".join(
+        f"{i + 1}. {r['name']}: {r['reasoning']}"
+        for i, r in enumerate(request.current_recommendations)
+    )
+
+    ctx = request.original_context
+    score_info = (
+        f"{ctx.get('score_type')} {ctx.get('score')}"
+        if ctx.get("score_type") and ctx.get("score")
+        else "not specified"
+    )
+    profile_text = (
+        f"Budget: ${ctx.get('budget_min', 0):,} – ${ctx.get('budget_max', 100_000_000):,}\n"
+        f"Test scores: {score_info}\n"
+        f"Region preference: {ctx.get('region') or 'no preference'}\n"
+        f"Interests / qualities: {ctx.get('user_prompt', '')}"
+    )
+
+    system_prompt = f"""You are a university admissions advisor helping a student refine their options.
+
+The student's current 5 recommendations are:
+{recs_text}
+
+Student's profile:
+{profile_text}
+
+Based on the student's new message, respond in exactly one of two JSON formats:
+
+If the student is asking a question or wants more information, answer conversationally:
+{{"type": "message", "content": "your response"}}
+
+If the student wants to re-prioritize or re-rank these same universities based on a new preference, return a fresh ranking of all 5:
+{{"type": "recommendations", "recommendations": [{{"name": "...", "reasoning": "..."}}]}}
+
+Respond with valid JSON only — no markdown, no extra text."""
+
+    messages = [
+        {"role": msg.role, "content": [{"text": msg.content}]}
+        for msg in request.conversation_history
+    ]
+    messages.append({"role": "user", "content": [{"text": request.new_message}]})
+
+    response = client.converse(
+        modelId=MODEL_ID,
+        system=[{"text": system_prompt}],
+        messages=messages,
+        inferenceConfig={"maxTokens": 1024},
+    )
+
+    response_text = response["output"]["message"]["content"][0]["text"]
+    return json.loads(response_text)

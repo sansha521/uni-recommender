@@ -6,11 +6,19 @@ import Header from '../components/Header.astro';
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+<<<<<<< Updated upstream
     <title>Results — CampusMatch</title>
+=======
+    <title>Your Recommendations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+>>>>>>> Stashed changes
   </head>
   <body>
     <Header />
 
+<<<<<<< Updated upstream
     <main class="results">
       <header class="results-intro">
         <h1>Your Top University Recommendations</h1>
@@ -28,11 +36,44 @@ import Header from '../components/Header.astro';
         <p>Get more personalized recommendations.</p>
         <Button href="/chat/" label="Chat with our AI Agent" variant="primary" class="chat-btn" />
       </section>
+=======
+    <main class="results-layout">
+
+      <!-- ── LEFT: Recommendations ────────────────────────────────── -->
+      <section class="recs-panel" aria-label="University recommendations">
+        <h2 class="panel-title">Your Top Matches</h2>
+        <div id="rec-list"></div>
+      </section>
+
+      <!-- ── RIGHT: Chat panel ────────────────────────────────────── -->
+      <section class="chat-panel" aria-label="Follow-up chat">
+        <h2 class="panel-title">Ask a follow-up</h2>
+
+        <div class="message-list" id="message-list" aria-live="polite">
+          <div class="bubble bubble--assistant">
+            Hi! Ask me anything about these universities, or describe a new preference and I'll update your recommendations.
+          </div>
+        </div>
+
+        <form class="chat-input-row" id="chat-form" autocomplete="off">
+          <input
+            id="chat-input"
+            class="chat-input"
+            type="text"
+            placeholder="e.g. I want a smaller campus"
+            aria-label="Follow-up message"
+          />
+          <button class="send-btn" type="submit" aria-label="Send">Send</button>
+        </form>
+      </section>
+
+>>>>>>> Stashed changes
     </main>
   </body>
 </html>
 
 <style>
+<<<<<<< Updated upstream
   @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Poppins:wght@500;600;700&display=swap");
 
   body {
@@ -176,14 +217,231 @@ import Header from '../components/Header.astro';
   type Recommendation = { name: string; reasoning: string };
 
   const raw = localStorage.getItem('recommendations') || '[]';
-
-  let recommendations: Recommendation[] = [];
-  try {
-    recommendations = JSON.parse(raw);
-  } catch (error) {
-    console.error('Could not parse recommendations:', error);
+=======
+  body {
+    margin: 0;
+    background: #f1f5f9;
+    font-family: Poppins, sans-serif;
+    color: #111827;
   }
 
+  .results-layout {
+    display: grid;
+    grid-template-columns: 62% 38%;
+    height: calc(100vh - 60px);
+    gap: 0;
+  }
+
+  /* ── Shared panel base ── */
+  .recs-panel,
+  .chat-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+
+  .recs-panel {
+    overflow-y: auto;
+    background: #f1f5f9;
+    scrollbar-width: thin;
+  }
+
+  .recs-panel::-webkit-scrollbar { width: 6px; }
+  .recs-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+  .chat-panel {
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+  }
+
+  .panel-title {
+    margin: 0 0 1.1rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #374151;
+    flex-shrink: 0;
+  }
+
+  /* ── Message list ── */
+  .message-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-right: 0.2rem;
+    scrollbar-width: thin;
+  }
+
+  .message-list::-webkit-scrollbar { width: 6px; }
+  .message-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .message-list::-webkit-scrollbar-track { background: transparent; }
+
+  /* Static initial bubble (Astro-scoped CSS applies here) */
+  .bubble {
+    max-width: 88%;
+    padding: 0.6rem 0.875rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+
+  .bubble--assistant {
+    align-self: flex-start;
+    background: #f1f5f9;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-bottom-left-radius: 0.25rem;
+  }
+
+  /* ── Chat input ── */
+  .chat-input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .chat-input {
+    flex: 1;
+    padding: 0.6rem 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-family: Poppins, sans-serif;
+    font-size: 0.85rem;
+    color: #111827;
+    background: #f9fafb;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .chat-input:focus {
+    border-color: #4f46e5;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  .send-btn {
+    padding: 0.6rem 1.1rem;
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-family: Poppins, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover    { background: #4338ca; }
+  .send-btn:active   { background: #3730a3; }
+  .send-btn:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+  /* ── Responsive ── */
+  @media (max-width: 760px) {
+    .results-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 50vh;
+      height: auto;
+    }
+    .chat-panel { border-left: none; border-top: 1px solid #e5e7eb; }
+  }
+</style>
+
+<!-- :global rules for dynamically-inserted elements (JS-created nodes don't get Astro's scope attribute) -->
+<style is:global>
+  /* ── Dynamic chat bubbles ── */
+  .bubble {
+    max-width: 88%;
+    padding: 0.6rem 0.875rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+
+  .bubble--user {
+    align-self: flex-end;
+    background: #4f46e5;
+    color: #ffffff;
+    border-bottom-right-radius: 0.25rem;
+  }
+
+  .bubble--assistant {
+    align-self: flex-start;
+    background: #f1f5f9;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-bottom-left-radius: 0.25rem;
+  }
+
+  .bubble--loading {
+    align-self: flex-start;
+    background: #f1f5f9;
+    color: #9ca3af;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    border-bottom-left-radius: 0.25rem;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.875rem;
+  }
+
+  /* ── Recommendation cards ── */
+  .rec-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 0.85rem;
+    transition: box-shadow 0.15s;
+  }
+
+  .rec-card:last-child { margin-bottom: 0; }
+  .rec-card:hover { box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1); }
+
+  .rec-rank {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin: 0 0 0.2rem;
+  }
+
+  .rec-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.45rem;
+  }
+
+  .rec-reasoning {
+    font-size: 0.85rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { API_URL } from 'astro:env/client';
+
+  type Recommendation = { name: string; reasoning: string };
+  type ChatMsg        = { role: 'user' | 'assistant'; content: string };
+
+  // ── Parse URL state ───────────────────────────────────────────────
+  const params = new URLSearchParams(window.location.search);
+>>>>>>> Stashed changes
+
+  let recommendations: Recommendation[] = [];
+  try { recommendations = JSON.parse(params.get('data') || '[]'); } catch {}
+
+<<<<<<< Updated upstream
   const container = document.getElementById('recommendations');
   const empty = document.getElementById('results-empty');
 
@@ -208,6 +466,99 @@ import Header from '../components/Header.astro';
 
       card.append(rank, name, reasoning);
       container.append(card);
+=======
+  let context: Record<string, unknown> = {};
+  try { context = JSON.parse(params.get('context') || '{}'); } catch {}
+
+  const history: ChatMsg[] = [];
+
+  // ── DOM refs ──────────────────────────────────────────────────────
+  const msgList = document.getElementById('message-list')!;
+  const recList = document.getElementById('rec-list')!;
+  const form    = document.getElementById('chat-form') as HTMLFormElement;
+  const input   = document.getElementById('chat-input') as HTMLInputElement;
+  const sendBtn = form.querySelector('button') as HTMLButtonElement;
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function renderRecs(recs: Recommendation[]) {
+    recList.innerHTML = '';
+    recs.forEach((rec, i) => {
+      const card = document.createElement('div');
+      card.className = 'rec-card';
+      card.innerHTML = `
+        <p class="rec-rank">Match #${i + 1}</p>
+        <h3 class="rec-name">${rec.name}</h3>
+        <p class="rec-reasoning">${rec.reasoning}</p>
+      `;
+      recList.appendChild(card);
+>>>>>>> Stashed changes
     });
   }
+
+  function addBubble(role: 'user' | 'assistant', text: string) {
+    const el = document.createElement('div');
+    el.className = `bubble bubble--${role}`;
+    el.textContent = text;
+    msgList.appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    return el;
+  }
+
+  function addLoading() {
+    const el = document.createElement('div');
+    el.className = 'bubble--loading';
+    el.textContent = 'Thinking…';
+    msgList.appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    return el;
+  }
+
+  // ── Initial render ────────────────────────────────────────────────
+  renderRecs(recommendations);
+
+  // ── Send ──────────────────────────────────────────────────────────
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    sendBtn.disabled = true;
+    addBubble('user', msg);
+    const spinner = addLoading();
+
+    try {
+      const res = await fetch(`${API_URL}chat/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          original_context: context,
+          current_recommendations: recommendations,
+          conversation_history: history,
+          new_message: msg,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      spinner.remove();
+
+      if (data.type === 'recommendations') {
+        recommendations = data.recommendations;
+        renderRecs(recommendations);
+        const reply = "I've updated your recommendations based on that — take a look on the left.";
+        addBubble('assistant', reply);
+        history.push({ role: 'user', content: msg }, { role: 'assistant', content: reply });
+      } else {
+        addBubble('assistant', data.content);
+        history.push({ role: 'user', content: msg }, { role: 'assistant', content: data.content });
+      }
+    } catch {
+      spinner.remove();
+      addBubble('assistant', 'Something went wrong — please try again.');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  });
 </script>

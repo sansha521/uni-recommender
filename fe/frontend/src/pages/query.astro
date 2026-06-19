@@ -444,8 +444,21 @@ import Header from '../components/Header.astro';
 
       const data = await response.json();
       const recommendations = data.recommendations;
+<<<<<<< Updated upstream
       localStorage.setItem('recommendations', JSON.stringify(recommendations));
       window.location.href = '/results';
+=======
+      const context = {
+        user_prompt: toStr(formData.get('qualities')) ?? '',
+        budget_min: toInt(formData.get('budget_min')) ?? 0,
+        budget_max: toInt(formData.get('budget_max')) ?? 100_000_000,
+        score_type: toStr(formData.get('score_type')),
+        score: toInt(formData.get('score')) ?? null,
+        region: toStr(formData.get('region')),
+      };
+      window.location.href =
+        `/results?data=${encodeURIComponent(JSON.stringify(recommendations))}&context=${encodeURIComponent(JSON.stringify(context))}`;
+>>>>>>> Stashed changes
     } catch (error) {
       console.error('Error fetching recommendations:', error);
     }
