@@ -1,24 +1,181 @@
 ---
+import { Button } from 'free-astro-components';
 import Header from '../components/Header.astro';
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Results</title>
+    <title>Results — CampusMatch</title>
   </head>
   <body>
     <Header />
-    <h1>Your Top University Recommendations</h1>
 
-    <div id="recommendations"></div>
+    <main class="results">
+      <header class="results-intro">
+        <h1>Your Top University Recommendations</h1>
+        <p class="results-sub">Congrats! These are the universities that may fit you best.</p>
+      </header>
+
+      <ul id="recommendations" class="result-list"></ul>
+
+      <div id="results-empty" class="results-empty" hidden>
+        <p>We don't have any recommendations to show yet.</p>
+        <Button href="/query/" label="Start a new search" variant="primary" />
+      </div>
+
+      <section class="results-chat">
+        <p>Get more personalized recommendations.</p>
+        <Button href="/chat/" label="Chat with our AI Agent" variant="primary" class="chat-btn" />
+      </section>
+    </main>
   </body>
 </html>
+
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Poppins:wght@500;600;700&display=swap");
+
+  body {
+    background-color: #f1f5f9;
+  }
+
+  .results {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .results-intro {
+    text-align: center;
+    margin-bottom: 1.75rem;
+  }
+
+  .results-intro h1 {
+    margin: 0 0 0.5rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: #111827;
+  }
+
+  .results-sub {
+    margin: 0;
+    font-family: Nunito, sans-serif;
+    color: #6b7280;
+  }
+
+  .result-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Cards are created client-side, so they live outside this component's
+     scope — reach them via the scoped parent + :global(). */
+  .results :global(.result-card) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
+    align-items: start;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    padding: 1.5rem;
+  }
+
+  .results :global(.result-rank) {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: rgb(64, 93, 255);
+    color: #ffffff;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    /* span both text rows so the badge stays top-aligned with the name */
+    grid-row: 1 / span 2;
+  }
+
+  .results :global(.result-name) {
+    margin: 0 0 0.35rem;
+    font-family: Poppins, sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #111827;
+    align-self: center;
+  }
+
+  .results :global(.result-reason) {
+    margin: 0;
+    grid-column: 2;
+    font-family: Nunito, sans-serif;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  .results-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #6b7280;
+  }
+
+  .results-empty p {
+    margin: 0 0 1.25rem;
+    font-family: Nunito, sans-serif;
+    font-size: 1.1rem;
+  }
+
+  .results-chat {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .results-chat p {
+    margin: 0 0 1rem;
+    font-family: Nunito, sans-serif;
+    color: #4b5563;
+  }
+
+  /* Special animated brand gradient for the AI chat CTA. Button renders in
+     its own scope, so reach it via :global; !important overrides the
+     library's solid primary variant. */
+  .results-chat :global(.chat-btn) {
+    background-image: linear-gradient(90deg, #3245ff, #bc52ee, #3245ff) !important;
+    background-size: 200% 200% !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+    animation: chat-gradient 6s ease infinite;
+  }
+
+  .results-chat :global(.chat-btn:hover) {
+    animation-duration: 2.5s;
+  }
+
+  @keyframes chat-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+</style>
 
 <script>
   type Recommendation = { name: string; reasoning: string };
 
-  const raw = new URLSearchParams(window.location.search).get('data') || '[]';
+  const raw = localStorage.getItem('recommendations') || '[]';
 
   let recommendations: Recommendation[] = [];
   try {
@@ -28,18 +185,29 @@ import Header from '../components/Header.astro';
   }
 
   const container = document.getElementById('recommendations');
-  if (container) {
-    recommendations.forEach((rec, i) => {
-      const wrapper = document.createElement('div');
+  const empty = document.getElementById('results-empty');
 
-      const title = document.createElement('h2');
-      title.textContent = `${i + 1}. ${rec.name}`;
+  if (!Array.isArray(recommendations) || recommendations.length === 0) {
+    empty?.removeAttribute('hidden');
+  } else if (container) {
+    recommendations.forEach((rec, i) => {
+      const card = document.createElement('li');
+      card.className = 'result-card';
+
+      const rank = document.createElement('span');
+      rank.className = 'result-rank';
+      rank.textContent = String(i + 1);
+
+      const name = document.createElement('h2');
+      name.className = 'result-name';
+      name.textContent = rec.name;
 
       const reasoning = document.createElement('p');
+      reasoning.className = 'result-reason';
       reasoning.textContent = rec.reasoning;
 
-      wrapper.append(title, reasoning);
-      container.append(wrapper);
+      card.append(rank, name, reasoning);
+      container.append(card);
     });
   }
 </script>
