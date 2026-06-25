@@ -23,7 +23,7 @@ class UserPromptModel(BaseModel):
 
 
 class ChatMessage(BaseModel):
-    role: str   # "user" or "assistant"
+    role: str  # "user" or "assistant"
     content: str
 
 
@@ -91,7 +91,8 @@ async def chat(request: ChatRequest):
         else "not specified"
     )
     profile_text = (
-        f"Budget: ${ctx.get('budget_min', 0):,} – ${ctx.get('budget_max', 100_000_000):,}\n"
+        f"Budget: ${ctx.get('budget_min', 0):,} – ${
+            ctx.get('budget_max', 100_000_000):,}\n"
         f"Test scores: {score_info}\n"
         f"Region preference: {ctx.get('region') or 'no preference'}\n"
         f"Interests / qualities: {ctx.get('user_prompt', '')}"
@@ -111,7 +112,8 @@ If the student is asking a question or wants more information, answer conversati
 {{"type": "message", "content": "your response"}}
 
 If the student wants to re-prioritize or re-rank these same universities based on a new preference, return a fresh ranking of all 5:
-{{"type": "recommendations", "recommendations": [{{"name": "...", "reasoning": "..."}}]}}
+{{"type": "recommendations", "recommendations": [
+    {{"name": "...", "reasoning": "..."}}]}}
 
 Respond with valid JSON only — no markdown, no extra text."""
 

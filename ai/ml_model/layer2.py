@@ -7,6 +7,7 @@ Output: 5 best universities
 """
 
 from pathlib import Path
+from functools import lru_cache
 
 import boto3
 import chromadb
@@ -22,13 +23,41 @@ load_dotenv()
 
 
 _MODELS_DIR = Path(__file__).parent / "models"
-session_google = ort.InferenceSession(str(_MODELS_DIR / "google_embeddings.onnx"))
-session_wikipedia = ort.InferenceSession(str(_MODELS_DIR / "wikipedia_embeddings.onnx"))
 
-tokenizer_google = Tokenizer.from_file(str(_MODELS_DIR / "google_tokenizer.json"))
-tokenizer_wikipedia = Tokenizer.from_file(str(_MODELS_DIR / "wikipedia_tokenizer.json"))
-tokenizer_google.enable_truncation(max_length=256)
-tokenizer_wikipedia.enable_truncation(max_length=512)
+
+@lru_cache(maxsize=1)
+def get_google_session():
+    return ort.InferenceSession(str(_MODELS_DIR / "google_embeddings.onnx"))
+
+
+@lru_cache(maxsize=1)
+def get_wikipedia_session():
+    return ort.InferenceSession(str(_MODELS_DIR / "wikipedia_embeddings.onnx"))
+
+
+@lru_cache(maxsize=1)
+def get_google_tokenizer():
+    t = Tokenizer.from_file(str(_MODELS_DIR / "google_tokenizer.json"))
+    t.enable_truncation(max_length=256)
+    return t
+
+
+@lru_cache(maxsize=1)
+def get_wikipedia_tokenizer():
+    t = Tokenizer.from_file(str(_MODELS_DIR / "wikipedia_tokenizer.json"))
+    t.enable_truncation(max_length=512)
+    return t
+
+
+@lru_cache(maxsize=1)
+def get_chroma_collection():
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
+    return client.get_collection(COLLECTION_NAME)
+
+
+@lru_cache(maxsize=1)
+def get_s3vectors():
+    return boto3.client("s3vectors", region_name=REGION)
 
 
 def _encode(session, tokenizer: Tokenizer, text: str, pooling: str) -> list:
@@ -84,10 +113,12 @@ s3vectors = boto3.client("s3vectors", region_name=REGION)
 
 def query_s3_vector(user_prompt: str) -> list[int]:
     # Embed the prompt
-    embeddings = _encode(session_google, tokenizer_google, user_prompt, "mean")
+    embeddings = _encode(
+        get_google_session(), get_google_tokenizer(), user_prompt, "mean"
+    )
 
     # Call the Vector Bucket
-    response = s3vectors.query_vectors(
+    response = get_s3vectors().query_vectors(
         vectorBucketName=VECTOR_BUCKET,
         indexName=INDEX_NAME_REVIEWS,
         queryVector={"float32": embeddings},
@@ -103,7 +134,9 @@ def query_s3_vector(user_prompt: str) -> list[int]:
 
 def query_s3_wikipedia(user_prompt: str) -> list[str]:
     # Embed the prompt
-    embeddings = _encode(session_wikipedia, tokenizer_wikipedia, user_prompt, "cls")
+    embeddings = _encode(
+        get_wikipedia_session(), get_wikipedia_tokenizer(), user_prompt, "cls"
+    )
 
     # Call the Vector Bucket
     response = s3vectors.query_vectors(
@@ -136,7 +169,7 @@ def layer2(
     df_reviews_filtered = df_reviews.iloc[reviews_row_ids]
     df_reviews_name = set(df_reviews_filtered["name"].tolist())
 
-    wikipedia_filered = collection.get(wikipedia_row_ids)
+    wikipedia_filered = get_chroma_collection().get(wikipedia_row_ids)
     wikipedia_filered_names = {
         metadata["name"] for metadata in wikipedia_filered["metadatas"]
     }
