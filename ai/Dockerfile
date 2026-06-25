@@ -56,4 +56,4 @@ COPY --from=builder /build/ml_model/models  /app/ml_model/models/
 EXPOSE 8000
 
 # Run the FastAPI application using the official CLI (FastAPI CLI)
-CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
