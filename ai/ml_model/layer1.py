@@ -4,11 +4,13 @@ Args: budget (range cost of attendance, tuition), concentration, degree (undergr
 Output: Top 20 universities that satisfy the requirements
 """
 
+from pathlib import Path
+
 import pandas as pd
 
 from ..utils import load_local_data
 
-DATA_PATH = "./data_source/us_uni_data_filtered.csv"
+DATA_PATH = str(Path(__file__).parent.parent / "data_source" / "us_uni_data_filtered.csv")
 
 
 def filter_uni(

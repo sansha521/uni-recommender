@@ -428,7 +428,7 @@ import Header from '../components/Header.astro';
       value === null || value === '' ? null : String(value);
 
     try {
-      const response = await fetch(`${API_URL}/prompt`, {
+      const response = await fetch(`${API_URL}/prompt/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -389,7 +389,7 @@ import Header from '../components/Header.astro';
     const spinner = addLoading();
 
     try {
-      const res = await fetch(`${API_URL}chat/`, {
+      const res = await fetch(`${API_URL}/chat/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

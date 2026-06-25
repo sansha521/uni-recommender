@@ -36,7 +36,7 @@ class ChatRequest(BaseModel):
 
 app = FastAPI()
 
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:4321")
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:4321,http://localhost:4322")
 allowed_origins = [o.strip() for o in _raw_origins.split(",")]
 
 app.add_middleware(
