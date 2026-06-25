@@ -91,7 +91,9 @@ VECTOR_BUCKET = "uni-rec-s3-vector-bucket"
 INDEX_NAME_REVIEWS = "uni-rec-index"
 INDEX_NAME_WIKIPEDIA = "uni-rec-wikipedia"
 
-NPY_FILE = "./data_source/embeddings.npy"
+_DATA_DIR = Path(__file__).parent.parent / "data_source"
+
+NPY_FILE = str(_DATA_DIR / "embeddings.npy")
 ADD_METADATA = True
 BATCH_SIZE = 500
 
@@ -99,11 +101,8 @@ COLLECTION_NAME = "universities"
 EMBED_MODEL = "multi-qa-mpnet-base-dot-v1"
 TEXT_TRUNCATE = 3000
 
-CHROMA_PATH = "./data_source/wikipedia/"
+CHROMA_PATH = str(_DATA_DIR / "wikipedia")
 COLLECTION_NAME = "universities"
-
-client = chromadb.PersistentClient(path=CHROMA_PATH)
-collection = client.get_collection(COLLECTION_NAME)
 
 # model_google = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 # model_wikipedia = SentenceTransformer(EMBED_MODEL)
@@ -164,7 +163,7 @@ def layer2(
     wikipedia_row_ids = query_s3_wikipedia(user_prompt)
 
     # Review DataFrame
-    df_reviews = load_local_data("./data_source/university_reviews_slice_2.csv")
+    df_reviews = load_local_data(str(_DATA_DIR / "university_reviews_slice_2.csv"))
 
     df_reviews_filtered = df_reviews.iloc[reviews_row_ids]
     df_reviews_name = set(df_reviews_filtered["name"].tolist())
@@ -181,5 +180,12 @@ def layer2(
     layer1_data_filtered = layer1_data[
         layer1_data["school.name"].isin(layer2_uni_names)
     ]
+
+    # Ensure at least 5 universities reach layer3; pad with top layer1 results
+    if len(layer1_data_filtered) < 5:
+        extras = layer1_data[~layer1_data["school.name"].isin(layer2_uni_names)]
+        layer1_data_filtered = pd.concat(
+            [layer1_data_filtered, extras]
+        ).head(5)
 
     return layer1_data_filtered
