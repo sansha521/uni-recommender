@@ -19,6 +19,13 @@ RUN python export_model.py
 # Use an official lightweight Python image
 FROM python:3.13-slim
 
+# Lambda Web Adapter — turns this into a Lambda-compatible image
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 /lambda-adapter /opt/extensions/lambda-adapter
+# Tell the adapter which port your app listens on (you use 8000)
+ENV AWS_LWA_PORT=8000
+# Point the adapter's readiness check at a path your app returns 200 on
+ENV AWS_LWA_READINESS_CHECK_PATH=/health
+
 # Prevent Python from writing pyc files to disc
 ENV PYTHONDONTWRITEBYTECODE=1
 
