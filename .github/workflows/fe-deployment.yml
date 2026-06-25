@@ -1,0 +1,88 @@
+# Builds the Astro frontend, syncs to S3, and invalidates CloudFront.
+#
+# Prerequisites (created once on the AWS side):
+#   1. S3 bucket:              uni-rec-fe-bucket  (private, served via CloudFront + OAC)
+#   2. CloudFront distribution: E2C4555RWCU617    (your distribution ID)
+#   3. Deployer IAM perms:     s3:PutObject, s3:DeleteObject, s3:ListBucket on the bucket
+#                              + cloudfront:CreateInvalidation on the distribution
+#   4. GitHub Actions secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+#   5. (Optional) repo variable / secret: PUBLIC_API_URL
+name: Deploy Frontend to S3 + CloudFront
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'fe/frontend/**'      # adjust to your Astro project path
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: uni-rec-fe
+  CLOUDFRONT_DISTRIBUTION_ID: E2C4555RWCU617
+  WORKING_DIR: fe/frontend     # path to your Astro project (use '.' if repo root)
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm ci
+
+      - name: Build Astro site
+        working-directory: ${{ env.WORKING_DIR }}
+        env:
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}   # baked into the bundle at build time
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync static assets to S3 (long cache)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          aws s3 sync ./dist "s3://${S3_BUCKET}" \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "*.json"
+
+      - name: Sync HTML + JSON to S3 (no cache)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          aws s3 sync ./dist "s3://${S3_BUCKET}" \
+            --delete \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --content-type "text/html" \
+            --exclude "*" \
+            --include "*.html"
+          aws s3 sync ./dist "s3://${S3_BUCKET}" \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --exclude "*" \
+            --include "*.json"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/*"
