@@ -47,6 +47,10 @@ def filter_uni(
     df_region = df_score
 
     if region:
+        if isinstance(region, str):
+            region = [region]
+        region = [reg.title() for reg in region]
+
         df_region = df_region[df_region["school.region_id"].isin(region)]
 
     final_df = df_region
