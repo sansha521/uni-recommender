@@ -75,13 +75,13 @@ jobs:
           IMAGE_URI: ${{ steps.build-image.outputs.image }}
         run: |
           aws lambda update-function-code \
-            --function-name "$LAMBDA_FUNCTION" \
+            --function-name "$LAMBDA_FUNCTION_NAME" \
             --image-uri "$IMAGE_URI" \
             --region "$AWS_REGION"
 
           # Wait until the update finishes before the job exits (mirrors wait-for-stability)
           aws lambda wait function-updated \
-            --function-name "$LAMBDA_FUNCTION" \
+            --function-name "$LAMBDA_FUNCTION_NAME" \
             --region "$AWS_REGION"
 
       # - name: Render new image into the ECS task definition
