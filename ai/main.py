@@ -7,8 +7,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from .ml_model import layer1, layer2, layer3
-from .ml_model.layer3 import MODEL_ID, client
+from ml_model import layer1, layer2, layer3
+from ml_model.layer3 import MODEL_ID, client
 
 load_dotenv()
 
@@ -36,7 +36,9 @@ class ChatRequest(BaseModel):
 
 app = FastAPI()
 
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:4321,http://localhost:4322")
+_raw_origins = os.getenv(
+    "ALLOWED_ORIGINS", "http://localhost:4321,http://localhost:4322"
+)
 allowed_origins = [o.strip() for o in _raw_origins.split(",")]
 
 app.add_middleware(
