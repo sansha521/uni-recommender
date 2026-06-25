@@ -1,12 +1,22 @@
-# Builds the AI service image, pushes it to Amazon ECR, then deploys to Amazon ECS (Fargate).
+# Builds the AI service image, pushes it to Amazon ECR, then deploys to AWS Lambda (container image).
 #
+# Prerequisites (created once on the AWS side):
+#   1. An ECR repository:        backend/uni-rec
+#   2. A Lambda function:        uni-rec-ai  (created FROM a container image, x86_64)
+#   3. A Function URL on that Lambda (for HTTPS access)
+#   4. Deployer IAM perms:       ECR push + lambda:UpdateFunctionCode, lambda:GetFunction
+#   5. GitHub Actions secrets:   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+#
+# NOTE: Previously:
+# Builds the AI service image, pushes it to Amazon ECR, then deploys to Amazon ECS (Fargate).
 # Prerequisites (created once on the AWS side — see the IAM/setup notes):
 #   1. An ECR repository:        backend/uni-rec
 #   2. An ECS cluster:           uni-rec-cluster
 #   3. An ECS service:           uni-rec-ai-service  (running the task defined in .github/ecs/tasks.json)
 #   4. A CloudWatch log group:   /ecs/uni-rec-ai-service
 #   5. Two IAM roles referenced in tasks.json (execution role + task role)
-#   6. GitHub Actions secrets:   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  (deployer credentials)
+#   6. GitHub Actions secrets:   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+
 
 name: Deploy AI-Service to Amazon ECS
 
@@ -20,10 +30,11 @@ on:
 env:
   AWS_REGION: us-east-1                               # AWS region
   ECR_REPOSITORY: backend/uni-rec                     # Amazon ECR repository name
-  ECS_CLUSTER: uni-rec-cluster                        # ECS cluster name
-  ECS_SERVICE: uni-rec-ai-service                     # ECS service name
-  ECS_TASK_DEFINITION: .github/ecs/fargate_tasks.json # path to the task definition template
+  # ECS_CLUSTER: uni-rec-cluster                        # ECS cluster name
+  # ECS_SERVICE: uni-rec-ai-service                     # ECS service name
+  # ECS_TASK_DEFINITION: .github/ecs/fargate_tasks.json # path to the task definition template
   CONTAINER_NAME: ai-service                          # must match the container name in tasks.json
+  LAMBDA_FUNCTION_NAME: uni-rec-ai-service            # Lambda Function Name
 
 permissions:
   contents: read
@@ -59,18 +70,32 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Render new image into the ECS task definition
-        id: render
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+      - name: Deploy new image to Lambda
+        env:
+          IMAGE_URI: ${{ steps.build-image.outputs.image }}
+        run: |
+          aws lambda update-function-code \
+            --function-name "$LAMBDA_FUNCTION" \
+            --image-uri "$IMAGE_URI" \
+            --region "$AWS_REGION"
 
-      - name: Deploy to Amazon ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.render.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+          # Wait until the update finishes before the job exits (mirrors wait-for-stability)
+          aws lambda wait function-updated \
+            --function-name "$LAMBDA_FUNCTION" \
+            --region "$AWS_REGION"
+
+      # - name: Render new image into the ECS task definition
+      #   id: render
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
+      #     container-name: ${{ env.CONTAINER_NAME }}
+      #     image: ${{ steps.build-image.outputs.image }}
+      #
+      # - name: Deploy to Amazon ECS
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      #   with:
+      #     task-definition: ${{ steps.render.outputs.task-definition }}
+      #     service: ${{ env.ECS_SERVICE }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
+      #     wait-for-service-stability: true
