@@ -39,12 +39,11 @@ def filter_uni(
         df_score = df_budget[df_budget[score_col] <= score]
 
     # filter by region
-    # TODO: add region column in dataset
     # northeast, midatlantic, midwest, west, southeast, southwest, northwest
     df_region = df_score
 
-    # if region:
-    #     df_region = df_region[df_region["region"].isin(region)]
+    if region:
+        df_region = df_region[df_region["school.region_id"].isin(region)]
 
     final_df = df_region
     return final_df
