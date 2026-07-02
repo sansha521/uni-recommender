@@ -30,9 +30,9 @@ on:
 env:
   AWS_REGION: us-east-1                               # AWS region
   ECR_REPOSITORY: backend/uni-rec                     # Amazon ECR repository name
-  # ECS_CLUSTER: uni-rec-cluster                        # ECS cluster name
-  # ECS_SERVICE: uni-rec-ai-service                     # ECS service name
-  # ECS_TASK_DEFINITION: .github/ecs/fargate_tasks.json # path to the task definition template
+  ECS_CLUSTER: uni-rec-cluster                        # ECS cluster name
+  ECS_SERVICE: uni-rec-ai-service                     # ECS service name
+  ECS_TASK_DEFINITION: .github/ecs/fargate_tasks.json # path to the task definition template
   CONTAINER_NAME: ai-service                          # must match the container name in tasks.json
   LAMBDA_FUNCTION_NAME: uni-rec-ai-service            # Lambda Function Name
 
@@ -84,18 +84,18 @@ jobs:
             --function-name "$LAMBDA_FUNCTION_NAME" \
             --region "$AWS_REGION"
 
-      # - name: Render new image into the ECS task definition
-      #   id: render
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #     container-name: ${{ env.CONTAINER_NAME }}
-      #     image: ${{ steps.build-image.outputs.image }}
-      #
-      # - name: Deploy to Amazon ECS
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-      #   with:
-      #     task-definition: ${{ steps.render.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+      - name: Render new image into the ECS task definition
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

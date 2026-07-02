@@ -8,9 +8,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from ..utils import load_local_data
+from utils import load_local_data
 
-DATA_PATH = str(Path(__file__).parent.parent / "data_source" / "us_uni_data_filtered.csv")
+DATA_PATH = str(
+    Path(__file__).parent.parent / "data_source" / "us_uni_data_filtered.csv"
+)
 
 
 def filter_uni(
@@ -45,6 +47,10 @@ def filter_uni(
     df_region = df_score
 
     if region:
+        if isinstance(region, str):
+            region = [region]
+        region = [reg.title() for reg in region]
+
         df_region = df_region[df_region["school.region_id"].isin(region)]
 
     final_df = df_region

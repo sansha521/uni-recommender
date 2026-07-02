@@ -17,7 +17,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from tokenizers import Tokenizer
 
-from ..utils import load_local_data
+from utils import load_local_data
 
 load_dotenv()
 
@@ -184,8 +184,6 @@ def layer2(
     # Ensure at least 5 universities reach layer3; pad with top layer1 results
     if len(layer1_data_filtered) < 5:
         extras = layer1_data[~layer1_data["school.name"].isin(layer2_uni_names)]
-        layer1_data_filtered = pd.concat(
-            [layer1_data_filtered, extras]
-        ).head(5)
+        layer1_data_filtered = pd.concat([layer1_data_filtered, extras]).head(5)
 
     return layer1_data_filtered
